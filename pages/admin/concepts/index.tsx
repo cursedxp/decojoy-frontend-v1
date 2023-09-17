@@ -2,7 +2,8 @@ import React from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 import { getAccessToken } from "@auth0/nextjs-auth0";
-
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import CustomTable from "../../../src/app/components/CustomTable";
 //fetch all concepts
 //Display all concepts by using the concepts item component
 //use addConceptButton to add a new concept
@@ -22,9 +23,25 @@ type AxiosError = {
 
 const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
   return (
-    <div>
-      <p>Data: {data}</p>
-    </div>
+    <main className="p-16 flex-col h-screen  bg-stone-100">
+      <div className=" text-xs text-gray-500 uppercase ">
+        Admin / <span className=" text-sky-500 font-semibold">Concepts</span>
+      </div>
+      <div className="flex justify-between items-center my-4">
+        <div className="flex-col">
+          <h1 className="text-lg font-medium">Concepts</h1>
+          <p className=" text-sm text-gray-500">
+            A list of all the concepts in the database. Click on a concept to
+            see more details.
+          </p>
+        </div>
+        <button className=" flex gap-2 items-center py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm">
+          <PlusCircleIcon className="h-5 w-5" />
+          Create
+        </button>
+      </div>
+      <CustomTable />
+    </main>
   );
 };
 
@@ -42,7 +59,7 @@ export const getServerSideProps: GetServerSideProps<ConceptPageProps> = async (
       };
     }
 
-    const response = await axios.get(process.env.API_URL + "/concepts/", {
+    const response = await axios.get(process.env.API_URL + "/concepts", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
