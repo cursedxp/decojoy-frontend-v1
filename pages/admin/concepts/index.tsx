@@ -4,9 +4,6 @@ import axios from "axios";
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
-//fetch all concepts
-//Display all concepts by using the concepts item component
-//use addConceptButton to add a new concept
 
 type ConceptPageProps = {
   data: string;
@@ -49,8 +46,8 @@ export const getServerSideProps: GetServerSideProps<ConceptPageProps> = async (
   context
 ) => {
   try {
-    const { accessToken } = await getAccessToken(context.req, context.res);
-
+    const tokenResponse = await axios.get("/api/getAccessToken");
+    const accessToken = tokenResponse.data.accessToken;
     if (!accessToken) {
       return {
         props: {
@@ -59,11 +56,14 @@ export const getServerSideProps: GetServerSideProps<ConceptPageProps> = async (
       };
     }
 
-    const response = await axios.get(process.env.API_URL + "/concepts", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await axios.get(
+      process.env.NEXT_PUBLIC_API_URL + "/concepts",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
     if (response.status !== 200) {
       throw new Error(`Server responded with status: ${response.status}`);
