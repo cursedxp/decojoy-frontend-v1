@@ -7,7 +7,6 @@ const accessTokenHandler = async (
 ) => {
   try {
     const session = await getSession(req, res);
-    console.log("session", session);
     if (!session || !session.accessToken) {
       return res
         .status(401)
