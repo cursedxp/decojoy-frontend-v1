@@ -7,23 +7,69 @@ import { PhotoIcon } from "@heroicons/react/24/outline";
 
 const ConceptImageUploader: React.FC = () => {
   const dispatch = useDispatch();
-  const [previewImages, setPreviewImages] = useState<string[]>([]); // Stores image preview URLs
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // Stores selected image files
+  const [previewImagesURLs, setPreviewImagesURLs] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Add new files to the current list
     setSelectedFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
 
     // Generate and add new previews to the current previews
-    const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
-    setPreviewImages((prevPreviews) => [...prevPreviews, ...newPreviews]);
+    const newPreviewsURLs = acceptedFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+    setPreviewImagesURLs((prevPreviewsURLs) => [
+      ...prevPreviewsURLs,
+      ...newPreviewsURLs,
+    ]);
+  }, []);
+
+  // Get access token for the current user
+  const getAccessToken = useCallback(async (): Promise<string> => {
+    const tokenResponse = await axios.get("/api/getAccessToken");
+
+    if (!tokenResponse.data.accessToken) {
+      throw new Error("Access token missing");
+    }
+
+    return tokenResponse.data.accessToken;
+  }, []);
+
+  // Upload images to the backend server
+  const uploadImagesToServer = useCallback(
+    async (accessToken: string): Promise<string[]> => {
+      const formData = new FormData();
+
+      selectedFiles.forEach((file) => formData.append("images", file));
+
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_API_URL + "/assets/upload",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return response.data.data.imageUrls;
+    },
+    [selectedFiles]
+  );
+
+  // Clear the current selection of files and their previews
+  const clearSelection = useCallback(() => {
+    setPreviewImagesURLs([]);
+    setSelectedFiles([]);
   }, []);
 
   // Handle the image upload to the server
-  const handleUpload = async () => {
+  const handleUpload = useCallback(async () => {
     try {
       const accessToken = await getAccessToken(); // Get an access token
       const imageUrls = await uploadImagesToServer(accessToken); // Upload images to the server
+
       dispatch(setImages(imageUrls)); // Dispatch the uploaded image URLs to Redux store
 
       // Clear previews and selected files after successful upload
@@ -31,46 +77,11 @@ const ConceptImageUploader: React.FC = () => {
     } catch (error) {
       console.error("Error uploading images:", error);
     }
-  };
-
-  // Get access token for the current user
-  const getAccessToken = async (): Promise<string> => {
-    const tokenResponse = await axios.get("/api/getAccessToken");
-    if (!tokenResponse.data.accessToken) {
-      throw new Error("Access token missing");
-    }
-    return tokenResponse.data.accessToken;
-  };
-
-  // Upload images to the backend server
-  const uploadImagesToServer = async (
-    accessToken: string
-  ): Promise<string[]> => {
-    const formData = new FormData();
-    selectedFiles.forEach((file) => formData.append("images", file));
-
-    const response = await axios.post(
-      process.env.NEXT_PUBLIC_API_URL + "/assets/upload",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return response.data.imageUrls; // Return the uploaded image URLs
-  };
-
-  // Clear the current selection of files and their previews
-  const clearSelection = () => {
-    setPreviewImages([]);
-    setSelectedFiles([]);
-  };
+  }, [getAccessToken, uploadImagesToServer, dispatch, clearSelection]);
 
   // Remove a specific file and its preview from the current selection
   const removeFile = (index: number) => {
-    setPreviewImages((prev) => prev.filter((_, idx) => idx !== index));
+    setPreviewImagesURLs((prev) => prev.filter((_, idx) => idx !== index));
     setSelectedFiles((prev) => prev.filter((_, idx) => idx !== index));
   };
 
@@ -101,7 +112,7 @@ const ConceptImageUploader: React.FC = () => {
         </div>
       </div>
       <div className="flex gap-4 flex-wrap">
-        {previewImages.map((src, index) => (
+        {previewImagesURLs.map((src, index) => (
           <img
             key={index}
             src={src}
@@ -114,7 +125,7 @@ const ConceptImageUploader: React.FC = () => {
         ))}
       </div>
       <div className=" self-end">
-        {previewImages.length > 0 && (
+        {previewImagesURLs.length > 0 && (
           <button
             onClick={handleUpload} // Trigger the image upload process
             className="flex gap-2 items-center py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm"
