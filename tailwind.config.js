@@ -10,7 +10,7 @@ module.exports = {
       theme: {
         extend: {
           colors: {
-            gray: {
+            "brand-gray": {
               100: "#F0F0F0",
               200: "#D9D9D9",
               300: "#B3B3B3",
@@ -21,7 +21,7 @@ module.exports = {
               800: "#222222", // Provided color
               900: "#111111",
             },
-            green: {
+            "brand-green": {
               100: "#E6F5E8",
               200: "#BFEBBF",
               300: "#99E096",
@@ -43,7 +43,7 @@ module.exports = {
               800: "#9E702F",
               900: "#7C5927",
             },
-            yellow: {
+            "brand-yellow": {
               100: "#FCFBE6",
               200: "#F9F8BF",
               300: "#F5F599",
