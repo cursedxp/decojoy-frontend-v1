@@ -1,49 +1,54 @@
 import React, { useState } from "react";
+//TODO:get returned image urls from image uploader component
+//TODO: set selected thumbnail image url to state
+//TODO: return selected thumbnail image url to create concept form component
+import { CakeIcon, CheckIcon } from "@heroicons/react/24/outline";
 
-interface ThumbnailSelectorProps {
-  uploadedImages: string[];
-  onSelect: (imageUrl: string) => void;
-}
+const sampleImageData = [
+  "https://picsum.photos/72/72",
+  "https://picsum.photos/72/73",
+  "https://picsum.photos/72/74",
+  "https://picsum.photos/72/75",
+];
 
-const ThumbnailSelector: React.FC<ThumbnailSelectorProps> = ({
-  uploadedImages = [], // Set a default value
-  onSelect,
-}) => {
+const ThumbnailSelector: React.FC = () => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(
     null
   );
 
-  const handleThumbnailClick = (imageUrl: string) => {
+  const handleThumbnailSelect = (imageUrl: string) => {
     setSelectedThumbnail(imageUrl);
-    onSelect(imageUrl); // Inform parent component of the selection
   };
 
   return (
-    <div className="flex flex-wrap gap-2.5">
-      {uploadedImages.map((imageUrl) => (
-        <div
-          key={imageUrl}
-          className={`relative cursor-pointer border-2 ${
-            selectedThumbnail === imageUrl
-              ? "border-blue-500"
-              : "border-transparent"
-          }`}
-          onClick={() => handleThumbnailClick(imageUrl)}
-        >
-          <img
-            src={imageUrl}
-            alt="Uploaded concept"
-            className="object-cover w-32 h-32"
-          />
-          {selectedThumbnail === imageUrl && (
-            <span className="absolute top-2.5 right-2.5 text-blue-500 text-xl">
-              ✔
-            </span>
-          )}
-        </div>
-      ))}
+    <div className="max-w-xl">
+      <div>
+        <h3 className="text-lg font-medium">Select thumbnail image</h3>
+        <p className="text-sm text-gray-500">
+          Choose a thumbnail image that best represents your concept
+        </p>
+      </div>
+
+      <div className="my-4 flex justify-center gap-4">
+        {sampleImageData.map((src, index) => {
+          return (
+            <div key={index} className=" relative group">
+              <img
+                src={src}
+                width={96}
+                alt="thumbnail"
+                className={`object-cover border-2 rounded-xl cursor-pointer ${
+                  selectedThumbnail === src
+                    ? "border-sky-600 shadow-md"
+                    : "border-transparent"
+                }`}
+                onClick={() => handleThumbnailSelect(src)}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
-
 export default ThumbnailSelector;
