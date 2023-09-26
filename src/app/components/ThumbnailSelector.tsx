@@ -1,23 +1,22 @@
 import React, { useState } from "react";
-//TODO:get returned image urls from image uploader component
-//TODO: set selected thumbnail image url to state
-//TODO: return selected thumbnail image url to create concept form component
 import { CakeIcon, CheckIcon } from "@heroicons/react/24/outline";
 
-const sampleImageData = [
-  "https://picsum.photos/72/72",
-  "https://picsum.photos/72/73",
-  "https://picsum.photos/72/74",
-  "https://picsum.photos/72/75",
-];
+interface ThumbnailSelectorProps {
+  imageUrls: string[];
+  onThumbnailSelected: (selectedImageUrl: string) => void;
+}
 
-const ThumbnailSelector: React.FC = () => {
+const ThumbnailSelector: React.FC<ThumbnailSelectorProps> = ({
+  imageUrls,
+  onThumbnailSelected,
+}) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(
     null
   );
 
   const handleThumbnailSelect = (imageUrl: string) => {
     setSelectedThumbnail(imageUrl);
+    onThumbnailSelected(imageUrl);
   };
 
   return (
@@ -30,19 +29,19 @@ const ThumbnailSelector: React.FC = () => {
       </div>
 
       <div className="my-4 flex justify-center gap-4">
-        {sampleImageData.map((src, index) => {
+        {imageUrls.map((url, index) => {
           return (
             <div key={index} className=" relative group">
               <img
-                src={src}
+                src={url}
                 width={96}
                 alt="thumbnail"
                 className={`object-cover border-2 rounded-xl cursor-pointer ${
-                  selectedThumbnail === src
+                  selectedThumbnail === url
                     ? "border-sky-600 shadow-md"
                     : "border-transparent"
                 }`}
-                onClick={() => handleThumbnailSelect(src)}
+                onClick={() => handleThumbnailSelect(url)}
               />
             </div>
           );
