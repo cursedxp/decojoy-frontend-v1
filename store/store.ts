@@ -1,9 +1,9 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import conceptReducer from "./conceptSlice";
+import conceptCreationReducer from "./createConceptSlice";
 
 // Combine all the slices together
 const rootReducer = combineReducers({
-  concept: conceptReducer,
+  conceptCreation: conceptCreationReducer,
 });
 
 // Create the store
