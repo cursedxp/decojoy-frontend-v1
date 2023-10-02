@@ -7,7 +7,7 @@ import { setImages } from "../../../../store/createConceptSlice";
 import { CreateConceptFormData } from "@/app/components/ConceptForm";
 import ConceptForm, { ConceptFormRef } from "@/app/components/ConceptForm";
 import { AxiosError } from "axios";
-
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
 const CreateConcept: React.FC = () => {
@@ -124,10 +124,17 @@ const CreateConcept: React.FC = () => {
       const formData = conceptFormRef.current.getFormData();
       try {
         const response = await uploadFormData(accessToken, formData);
+        // Assuming your server responds with a message on success:
+        toast.success(response.message || "Concept successfully created!");
       } catch (error) {
         if (axios.isAxiosError(error)) {
+          // If there's an error message from the server, show it.
+          toast.error(
+            error.response?.data.message || "Error creating concept."
+          );
           console.error("Error details:", error.response?.data);
         } else {
+          toast.error("An unknown error occurred.");
           console.error("Unknown error:", error);
         }
       }
@@ -136,6 +143,18 @@ const CreateConcept: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {currentStep === 1 && (
         <ImageUploader onImagesSelected={handleImagesSelected} />
       )}
