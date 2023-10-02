@@ -20,7 +20,7 @@ const roomTypes = [
   "KITCHEN",
   "LIVINGROOM",
   "BEDROOM",
-  "DINING",
+  "DININGROOM",
   "BATHROOM",
   "OFFICE",
   "STUDY",
@@ -34,7 +34,7 @@ export interface CreateConceptFormData {
   title: string;
   description: string;
   style: string;
-  roomType: string;
+  type: string;
   price: number;
   images: string[];
   thumbnail: string;
@@ -53,17 +53,19 @@ export interface ConceptFormRef {
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
+  style: Yup.string()
+    .required("Concept style is required")
+    .oneOf(conceptStyles, "Invalid concept style")
+    .typeError("Concept style must be one of: " + conceptStyles.join(", ")),
+  type: Yup.string()
+    .required("Room type is required")
+    .oneOf(roomTypes, "Invalid room type")
+    .typeError("Room type must be one of: " + roomTypes.join(", ")),
+
   price: Yup.number()
     .typeError("Price must be a number")
     .integer("Price must be an integer number")
     .required("Price is required"),
-  Style: Yup.string().required("Concept style is required"),
-  roomType: Yup.string()
-    .oneOf(
-      roomTypes,
-      "Room type must be one of the following values: " + roomTypes.join(", ")
-    )
-    .required("Room type is required"),
   thumbnail: Yup.string().required("Thumbnail is required"),
   images: Yup.array()
     .of(Yup.string().required("Each value in images must be a string"))
@@ -77,11 +79,11 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
       initialValues: {
         title: "",
         description: "",
-        price: 0,
-        roomType: "",
+        type: "",
         style: "",
-        thumbnail: props.thumbnail || "", // Adjusted this line
+        price: 0,
         images: props.images || [],
+        thumbnail: props.thumbnail || "", // Adjusted this line
       },
       validationSchema: validationSchema,
       onSubmit: (values) => {},
@@ -172,9 +174,12 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
                   value={formik.values.style}
                   className="block w-full border border-gray-300 rounded-md p-1 text-sm "
                 >
-                  {conceptStyles.map((style, index) => (
-                    <option key={index} value={style} className="capitalize">
-                      {style}
+                  <option value="" disabled>
+                    Select a Room Type
+                  </option>
+                  {conceptStyles.map((type, index) => (
+                    <option key={index} value={type} className="capitalize">
+                      {type}
                     </option>
                   ))}
                 </select>
@@ -184,10 +189,7 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
               </div>
               <div>
                 <div>
-                  <label
-                    htmlFor="roomType"
-                    className=" text-xs font-medium mt-4"
-                  >
+                  <label htmlFor="type" className=" text-xs font-medium mt-4">
                     Room Type
                   </label>
                   <p className=" text-xs text-gray-500">
@@ -195,23 +197,24 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
                   </p>
                 </div>
                 <select
-                  id="roomType"
-                  name="roomType"
+                  id="type"
+                  name="type"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.roomType}
+                  value={formik.values.type}
                   className="block w-full border border-gray-300 rounded-md p-1 text-sm"
                 >
+                  <option value="" disabled>
+                    Select a Room Type
+                  </option>
                   {roomTypes.map((type, index) => (
                     <option key={index} value={type} className="capitalize">
                       {type}
                     </option>
                   ))}
                 </select>
-                {formik.touched.roomType && formik.errors.roomType && (
-                  <p className="text-red-500 text-xs">
-                    {formik.errors.roomType}
-                  </p>
+                {formik.touched.type && formik.errors.type && (
+                  <p className="text-red-500 text-xs">{formik.errors.type}</p>
                 )}
               </div>
               <div>
