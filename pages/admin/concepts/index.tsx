@@ -1,9 +1,9 @@
 import React from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
-import { getAccessToken } from "@auth0/nextjs-auth0";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
+import Link from "next/link";
 
 type ConceptPageProps = {
   data: string;
@@ -32,10 +32,13 @@ const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
             see more details.
           </p>
         </div>
-        <button className=" flex gap-2 items-center py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm">
+        <Link
+          href={"concepts/create"}
+          className=" flex gap-2 items-center py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm"
+        >
           <PlusCircleIcon className="h-5 w-5" />
           Create
-        </button>
+        </Link>
       </div>
       <CustomTable />
     </main>
