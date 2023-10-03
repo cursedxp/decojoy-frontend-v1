@@ -4,7 +4,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
 import Modal from "@/app/components/Modal";
 import CreateConceptFlow from "@/app/components/CreateConceptFlow";
-
+import { ToastContainer, toast } from "react-toastify";
 interface Concept {
   id: number;
   title: string;
@@ -65,9 +65,13 @@ const ConceptPage: React.FC = () => {
     fetchConceptData();
   };
 
+  const onConceptCreated = (message: any) => {
+    toast.success(message || "Concept successfully created!");
+  };
+
   useEffect(() => {
     fetchConceptData();
-  }, [data]);
+  }, []);
 
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
@@ -93,8 +97,23 @@ const ConceptPage: React.FC = () => {
         </button>
       </div>
       <CustomTable data={data} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Modal isOpen={showModal} onClose={onClose}>
-        <CreateConceptFlow />
+        <CreateConceptFlow
+          onConceptCreated={onConceptCreated}
+          onClose={onClose}
+        />
       </Modal>
     </main>
   );
