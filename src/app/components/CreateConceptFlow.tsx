@@ -2,15 +2,15 @@ import React, { useCallback, useState, useRef } from "react";
 import ImageUploader from "@/app/components/ImageUploader";
 import ThumbnailSelector from "@/app/components/ThumbnailSelector";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store/store";
-import { setImages } from "../../../../store/createConceptSlice";
+import { RootState } from "../../../store/store";
+import { setImages } from "../../../store/createConceptSlice";
 import { CreateConceptFormData } from "@/app/components/ConceptForm";
 import ConceptForm, { ConceptFormRef } from "@/app/components/ConceptForm";
 import { AxiosError } from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
-const CreateConcept: React.FC = () => {
+const CreateConceptFlow: React.FC = () => {
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -174,7 +174,7 @@ const CreateConcept: React.FC = () => {
       )}
 
       <button
-        className="w-32 py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm"
+        className="w-32 py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm self-end "
         onClick={() => {
           if (currentStep === 1) {
             handleUploadClick();
@@ -200,4 +200,4 @@ const CreateConcept: React.FC = () => {
   );
 };
 
-export default CreateConcept;
+export default CreateConceptFlow;
