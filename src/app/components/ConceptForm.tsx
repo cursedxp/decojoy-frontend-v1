@@ -177,9 +177,10 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
                 <option value="" disabled>
                   Select a Room Type
                 </option>
-                {conceptStyles.map((type, index) => (
-                  <option key={index} value={type} className="capitalize">
-                    {type}
+                {conceptStyles.map((style, index) => (
+                  <option key={index} value={style} className="capitalize">
+                    {style.charAt(0).toUpperCase() +
+                      style.slice(1).toLowerCase()}
                   </option>
                 ))}
               </select>
@@ -209,7 +210,7 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
                 </option>
                 {roomTypes.map((type, index) => (
                   <option key={index} value={type} className="capitalize">
-                    {type}
+                    {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}
                   </option>
                 ))}
               </select>
