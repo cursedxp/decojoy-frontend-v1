@@ -1,9 +1,11 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
 import Link from "next/link";
+import Modal from "@/app/components/Modal";
+import CreateConceptFlow from "@/app/components/CreateConceptFlow";
 
 type ConceptPageProps = {
   data: string;
@@ -19,6 +21,8 @@ type AxiosError = {
 };
 
 const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
+  const [showModal, setShowModal] = React.useState(false);
+
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
       <div className=" text-xs text-gray-500 uppercase ">
@@ -32,15 +36,20 @@ const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
             see more details.
           </p>
         </div>
-        <Link
-          href={"concepts/create"}
+        <button
           className=" flex gap-2 items-center py-2 px-4 bg-sky-600 rounded-xl text-white text-sm shadow-sm"
+          onClick={() => {
+            setShowModal(true);
+          }}
         >
           <PlusCircleIcon className="h-5 w-5" />
           Create
-        </Link>
+        </button>
       </div>
       <CustomTable />
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <CreateConceptFlow />
+      </Modal>
     </main>
   );
 };
