@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface CustomTableProps {
@@ -16,6 +16,14 @@ interface CustomTableProps {
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
+  const formattedDate = useCallback((date: string) => {
+    const newDate = new Date(date);
+    return newDate.toLocaleDateString("eu-EU", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }, []);
   return (
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
       <table className="min-w-full custom-table">
@@ -70,7 +78,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
                 </td>
                 <td className="py-3 px-6  border-gray-300">{concept.price}</td>
                 <td className="py-3 px-6  border-gray-300">
-                  {concept.createdAt}
+                  {formattedDate(concept.createdAt)}
                 </td>
                 <td className="py-3 px-6  border-gray-300">
                   <div className=" bg-orange-200 rounded-md text-center text-orange-400 p-0 border-2 border-orange-300">
