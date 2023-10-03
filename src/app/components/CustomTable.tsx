@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import axios, { AxiosError } from "axios";
 
 interface CustomTableProps {
   data: {
@@ -13,10 +15,11 @@ interface CustomTableProps {
     type: string;
     createdAt: string;
   }[];
+  onDelete: (id: number) => void;
 }
 
-const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
-  const formattedDate = useCallback((date: string) => {
+const CustomTable: React.FC<CustomTableProps> = ({ data, onDelete }) => {
+  const formatDate = useCallback((date: string) => {
     const newDate = new Date(date);
     return newDate.toLocaleDateString("eu-EU", {
       day: "numeric",
@@ -24,6 +27,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
       year: "numeric",
     });
   }, []);
+
   return (
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
       <table className="min-w-full custom-table">
@@ -37,6 +41,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
             <th className="py-3 px-6 text-left">Price</th>
             <th className="py-3 px-6 text-left">Created At</th>
             <th className="py-3 px-6 text-left">Status</th>
+            <th className="py-3 px-6 text-left"></th>
           </tr>
         </thead>
         {data.length === 0 && (
@@ -78,13 +83,21 @@ const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
                 </td>
                 <td className="py-3 px-6  border-gray-300">{concept.price}</td>
                 <td className="py-3 px-6  border-gray-300">
-                  {formattedDate(concept.createdAt)}
+                  {formatDate(concept.createdAt)}
                 </td>
                 <td className="py-3 px-6  border-gray-300">
-                  <div className=" bg-orange-200 rounded-md text-center text-orange-400 p-0 border-2 border-orange-300">
+                  <div className=" bg-orange-200 rounded-xl text-center text-orange-400 p-1 border-2 border-orange-300">
                     {concept.status.charAt(0).toUpperCase() +
                       concept.status.slice(1).toLowerCase()}
                   </div>
+                </td>
+                <td className="py-3 px-6  border-gray-300">
+                  <button
+                    className="bg-red-100 hover:bg-red-700  text-red-500 hover:text-white font-bold p-2 rounded-xl"
+                    onClick={() => onDelete(concept.id)}
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
                 </td>
               </tr>
             );
