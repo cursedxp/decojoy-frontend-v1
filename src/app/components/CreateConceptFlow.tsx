@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import ImageUploader from "@/app/components/ImageUploader";
 import ThumbnailSelector from "@/app/components/ThumbnailSelector";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,11 +6,17 @@ import { RootState } from "../../../store/store";
 import { setImages } from "../../../store/createConceptSlice";
 import { CreateConceptFormData } from "@/app/components/ConceptForm";
 import ConceptForm, { ConceptFormRef } from "@/app/components/ConceptForm";
-import { AxiosError } from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
-const CreateConceptFlow: React.FC = () => {
+interface CreateConceptFlowProps {
+  onConceptCreated: (message: string) => void;
+  onClose: () => void;
+}
+
+const CreateConceptFlow: React.FC<CreateConceptFlowProps> = ({
+  onConceptCreated,
+  onClose,
+}) => {
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -18,9 +24,7 @@ const CreateConceptFlow: React.FC = () => {
     null
   );
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-
   const conceptFormRef = useRef<ConceptFormRef | null>(null);
-
   const [conceptDetails, setConceptDetails] =
     useState<CreateConceptFormData | null>(null);
 
@@ -63,7 +67,6 @@ const CreateConceptFlow: React.FC = () => {
     return formData;
   };
 
-  // Upload images or save concept data to the server
   const uploadImages = async (
     accessToken: string,
     formData: FormData
@@ -73,13 +76,11 @@ const CreateConceptFlow: React.FC = () => {
     });
   };
 
-  // Update UI after images are uploaded
   const updateUIAfterUpload = (imageUrls: string[]): void => {
     dispatch(setImages(imageUrls));
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  // Handle upload button click
   const handleUploadClick = async (): Promise<void> => {
     if (currentStep !== 1) return;
 
@@ -96,7 +97,6 @@ const CreateConceptFlow: React.FC = () => {
     }
   };
 
-  // Get access token of the user
   const getAccessToken = async (): Promise<string> => {
     const tokenResponse = await axios.get("/api/getAccessToken");
     if (!tokenResponse.data.accessToken) {
@@ -109,7 +109,6 @@ const CreateConceptFlow: React.FC = () => {
     accessToken: string,
     formData: CreateConceptFormData
   ): Promise<any> => {
-    console.log("formData", formData);
     return await axios.post(API_ENDPOINT_FOR_NEW_CONCEPT, formData, {
       headers: getUploadHeaders(accessToken, formData),
     });
@@ -124,37 +123,21 @@ const CreateConceptFlow: React.FC = () => {
       const formData = conceptFormRef.current.getFormData();
       try {
         const response = await uploadFormData(accessToken, formData);
-        // Assuming your server responds with a message on success:
-        toast.success(response.message || "Concept successfully created!");
+        onConceptCreated(response.message);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           // If there's an error message from the server, show it.
-          toast.error(
-            error.response?.data.message || "Error creating concept."
-          );
           console.error("Error details:", error.response?.data);
         } else {
-          toast.error("An unknown error occurred.");
           console.error("Unknown error:", error);
         }
       }
     }
+    onClose();
   };
 
   return (
     <div className="flex flex-col justify-center">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       {currentStep === 1 && (
         <ImageUploader onImagesSelected={handleImagesSelected} />
       )}
