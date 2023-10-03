@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
 import Modal from "@/app/components/Modal";
 import CreateConceptFlow from "@/app/components/CreateConceptFlow";
 import { ToastContainer, toast } from "react-toastify";
+
 interface Concept {
   id: number;
   title: string;
@@ -69,9 +70,67 @@ const ConceptPage: React.FC = () => {
     toast.success(message || "Concept successfully created!");
   };
 
+  const getHeaders = (accessToken: string) => {
+    let contentType = "application/json";
+    return {
+      "Content-Type": contentType,
+      Authorization: `Bearer ${accessToken}`,
+    };
+  };
+
+  const deleteConcept = async (id: number): Promise<any> => {
+    const accessToken = await getAccessToken();
+    const headers = getHeaders(accessToken);
+    try {
+      const response = await axios.delete(
+        process.env.NEXT_PUBLIC_API_URL + `/concepts/${id}`,
+        {
+          headers: headers,
+        }
+      );
+      // Updating the data after delete
+      setData((prevData) => prevData.filter((concept) => concept.id !== id));
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
+        console.log("Unauthorized");
+      } else {
+        console.log("Something went wrong");
+      }
+    }
+  };
+
+  const publishConcept = async (id: number): Promise<any> => {
+    const accessToken = await getAccessToken();
+    const headers = getHeaders(accessToken);
+    try {
+      const response = await axios.put(
+        process.env.NEXT_PUBLIC_API_URL + `/concepts/${id}/publish`,
+        {},
+        {
+          headers: headers,
+        }
+      );
+      // Updating the data after publish
+      const updatedConcept = response.data;
+      setData((prevData) =>
+        prevData.map((concept) =>
+          concept.id === id ? updatedConcept : concept
+        )
+      );
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
+        console.log("Unauthorized");
+      } else {
+        console.log("Something went wrong");
+      }
+    }
+  };
+
   useEffect(() => {
     fetchConceptData();
-  }, []);
+  }, [fetchConceptData]);
 
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
@@ -96,7 +155,7 @@ const ConceptPage: React.FC = () => {
           Create
         </button>
       </div>
-      <CustomTable data={data} />
+      <CustomTable data={data} onDelete={deleteConcept} />
       <ToastContainer
         position="top-right"
         autoClose={3000}
