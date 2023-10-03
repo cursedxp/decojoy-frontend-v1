@@ -38,14 +38,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesSelected }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div className="max-w-xl">
-      <div className="my-4">
+    <div>
+      <div className="mb-4">
         <h3 className="text-lg font-medium">Select concept images</h3>
         <p className="text-sm text-gray-500">
           Upload images that best represent your concept
         </p>
       </div>
-
       <div
         {...getRootProps()}
         className="flex justify-center bg-gray-100 p-4 text-xs border-dashed border border-gray-300 rounded-xl"
@@ -65,7 +64,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesSelected }) => {
           </div>
         )}
       </div>
-
       <div className="my-4 flex gap-4">
         {previewImageUrls.map((src, index) => (
           <div key={index} className="relative group">
@@ -75,7 +73,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesSelected }) => {
               className="rounded-xl hover:opacity-80"
               onClick={() => removePreviewImage(index)}
               title="Click to remove image"
-              width={80}
+              width={96}
             />
             <div
               className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-xl shadow-sm cursor-pointer"
