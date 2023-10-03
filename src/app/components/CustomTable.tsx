@@ -31,41 +31,52 @@ const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
             <th className="py-3 px-6 text-left">Status</th>
           </tr>
         </thead>
+        {data.length === 0 && (
+          <tbody className="text-gray-700">
+            <tr>
+              <td
+                className="py-3 px-6 text-center  border-gray-300"
+                colSpan={8}
+              >
+                No concepts found
+              </td>
+            </tr>
+          </tbody>
+        )}
         <tbody className="text-gray-700">
           {data.map((concept) => {
             const newUUID = uuidv4();
             return (
               <tr key={newUUID}>
-                <td className="py-3 px-6 border-b border-gray-300">
+                <td className="py-3 px-6 border-gray-300">
                   <img
                     src={concept.thumbnail}
                     alt="thumbnail"
-                    width={96}
-                    className=" rounded-2xl"
+                    width={56}
+                    className=" rounded-md"
                   />
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {concept.title}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
+                <td className="py-3 px-6  border-gray-300">{concept.title}</td>
+                <td className="py-3 px-6  border-gray-300">
                   {concept.description}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
+                <td className="py-3 px-6  border-gray-300">
                   {concept.type.charAt(0).toUpperCase() +
                     concept.type.slice(1).toLowerCase()}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
+                <td className="py-3 px-6  border-gray-300">
                   {concept.style.charAt(0).toUpperCase() +
                     concept.style.slice(1).toLowerCase()}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {concept.price}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
+                <td className="py-3 px-6  border-gray-300">{concept.price}</td>
+                <td className="py-3 px-6  border-gray-300">
                   {concept.createdAt}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {concept.status}
+                <td className="py-3 px-6  border-gray-300">
+                  <div className=" bg-orange-200 rounded-md text-center text-orange-400 p-0 border-2 border-orange-300">
+                    {concept.status.charAt(0).toUpperCase() +
+                      concept.status.slice(1).toLowerCase()}
+                  </div>
                 </td>
               </tr>
             );
