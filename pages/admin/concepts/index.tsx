@@ -1,27 +1,73 @@
-import React, { use, useEffect } from "react";
-import { GetServerSideProps } from "next";
+import React, { useCallback, useEffect } from "react";
 import axios from "axios";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import CustomTable from "../../../src/app/components/CustomTable";
-import Link from "next/link";
 import Modal from "@/app/components/Modal";
 import CreateConceptFlow from "@/app/components/CreateConceptFlow";
 
-type ConceptPageProps = {
-  data: string;
-};
+interface Concept {
+  id: number;
+  title: string;
+  description: string;
+  thumbnail: string;
+  price: number;
+  status: string;
+  style: string;
+  type: string;
+  createdAt: string;
+}
 
-type AxiosError = {
-  response?: {
-    status: number;
-    statusText: string;
-  };
-  request?: any;
-  message?: string;
-};
-
-const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
+const ConceptPage: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
+  const [data, setData] = React.useState<Concept[]>([]);
+
+  const fetchConceptData = useCallback(async () => {
+    const accessToken = await getAccessToken();
+    const concepts = await getConcepts(accessToken);
+    setData(concepts);
+  }, []);
+
+  // Get access token from server
+  const getAccessToken = async () => {
+    const tokenResponse = await axios.get("/api/getAccessToken");
+    const accessToken = tokenResponse.data.accessToken;
+    if (!accessToken) {
+      return {
+        props: {
+          data: "User not authenticated",
+        },
+      };
+    }
+    return accessToken;
+  };
+
+  // Get concepts from server
+  const getConcepts = async (accessToken: string) => {
+    const response = await axios.get(
+      process.env.NEXT_PUBLIC_API_URL + "/concepts",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (response.status !== 200) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+
+    const data = await response.data;
+    return data;
+  };
+
+  const onClose = () => {
+    setShowModal(false);
+    fetchConceptData();
+  };
+
+  useEffect(() => {
+    fetchConceptData();
+  }, [data]);
 
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
@@ -46,81 +92,12 @@ const ConceptPage: React.FC<ConceptPageProps> = ({ data }) => {
           Create
         </button>
       </div>
-      <CustomTable />
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+      <CustomTable data={data} />
+      <Modal isOpen={showModal} onClose={onClose}>
         <CreateConceptFlow />
       </Modal>
     </main>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<ConceptPageProps> = async (
-  context
-) => {
-  try {
-    const tokenResponse = await axios.get("/api/getAccessToken");
-    const accessToken = tokenResponse.data.accessToken;
-    if (!accessToken) {
-      return {
-        props: {
-          data: "User not authenticated",
-        },
-      };
-    }
-
-    const response = await axios.get(
-      process.env.NEXT_PUBLIC_API_URL + "/concepts",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (response.status !== 200) {
-      throw new Error(`Server responded with status: ${response.status}`);
-    }
-
-    const data = await response.data;
-    return {
-      props: { data },
-    };
-  } catch (error) {
-    const axiosError = error as AxiosError;
-
-    // Handling specific error types
-    if (axiosError.response && axiosError.response.status === 401) {
-      return {
-        props: {
-          data: "Unauthorized access. Please log in again.",
-        },
-      };
-    } else if (axiosError.response) {
-      return {
-        props: {
-          data: `Error fetching data: ${axiosError.response.status} ${axiosError.response.statusText}`,
-        },
-      };
-    } else if (axiosError.request) {
-      return {
-        props: {
-          data: "Network error. Please check your connection and try again.",
-        },
-      };
-    } else if (axiosError.message) {
-      return {
-        props: {
-          data: `An error occurred: ${axiosError.message}`,
-        },
-      };
-    } else {
-      return {
-        props: {
-          data: "An unknown error occurred.",
-        },
-      };
-    }
-  }
 };
 
 export default ConceptPage;
