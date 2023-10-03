@@ -105,140 +105,139 @@ const ConceptForm = forwardRef<ConceptFormRef, ConceptInfoFormProps>(
           </p>
         </div>
         <div>
-          <form onSubmit={formik.handleSubmit} className="mt-4 flex gap-4">
-            <div className="flex flex-col">
+          <form
+            onSubmit={formik.handleSubmit}
+            className="mt-4 flex flex-col gap-3 "
+          >
+            <div>
               <div>
-                <div>
-                  <label htmlFor="title" className="text-xs font-medium">
-                    Title
-                  </label>
-                  <p className=" text-xs text-gray-500">
-                    Enter your concept title here
-                  </p>
-                </div>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.title}
-                  className="block w-full border border-gray-300 rounded-md p-1 text-sm "
-                />
-                {formik.touched.title && formik.errors.title && (
-                  <p className="text-red-500 text-xs">{formik.errors.title}</p>
-                )}
+                <label htmlFor="title" className="text-xs font-medium">
+                  Title
+                </label>
+                <p className=" text-xs text-gray-500">
+                  Enter your concept title here
+                </p>
               </div>
-              <div>
-                <div>
-                  <label
-                    htmlFor="description"
-                    className=" text-xs font-medium mt-4"
-                  >
-                    Description
-                  </label>
-                  <p className=" text-xs text-gray-500">
-                    Enter your concept description here.
-                  </p>
-                </div>
-                <textarea
-                  id="description"
-                  name="description"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.description}
-                  className="block w-full border border-gray-300 rounded-md p-1 text-sm "
-                ></textarea>
-                {formik.touched.description && formik.errors.description && (
-                  <p className="text-red-500 text-xs">
-                    {formik.errors.description}
-                  </p>
-                )}
-              </div>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.title}
+                className="block w-full border border-gray-300 rounded-md p-1 text-sm "
+              />
+              {formik.touched.title && formik.errors.title && (
+                <p className="text-red-500 text-xs">{formik.errors.title}</p>
+              )}
             </div>
-            <div className="flex flex-col">
+            <div>
               <div>
-                <div>
-                  <label htmlFor="style" className=" text-xs font-medium mt-4">
-                    Concept Style
-                  </label>
-                  <p className=" text-xs text-gray-500">
-                    Choose your concept style from the list
-                  </p>
-                </div>
-                <select
-                  id="style"
-                  name="style"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.style}
-                  className="block w-full border border-gray-300 rounded-md p-1 text-sm "
+                <label
+                  htmlFor="description"
+                  className=" text-xs font-medium mt-4"
                 >
-                  <option value="" disabled>
-                    Select a Room Type
-                  </option>
-                  {conceptStyles.map((type, index) => (
-                    <option key={index} value={type} className="capitalize">
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                {formik.touched.style && formik.errors.style && (
-                  <p className="text-red-500 text-xs">{formik.errors.style}</p>
-                )}
+                  Description
+                </label>
+                <p className=" text-xs text-gray-500">
+                  Enter your concept description here.
+                </p>
               </div>
+              <textarea
+                id="description"
+                name="description"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.description}
+                className="block w-full border border-gray-300 rounded-md p-1 text-sm "
+              ></textarea>
+              {formik.touched.description && formik.errors.description && (
+                <p className="text-red-500 text-xs">
+                  {formik.errors.description}
+                </p>
+              )}
+            </div>
+            <div>
               <div>
-                <div>
-                  <label htmlFor="type" className=" text-xs font-medium mt-4">
-                    Room Type
-                  </label>
-                  <p className=" text-xs text-gray-500">
-                    Choose your room type from the list
-                  </p>
-                </div>
-                <select
-                  id="type"
-                  name="type"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.type}
-                  className="block w-full border border-gray-300 rounded-md p-1 text-sm"
-                >
-                  <option value="" disabled>
-                    Select a Room Type
+                <label htmlFor="style" className=" text-xs font-medium mt-4">
+                  Concept Style
+                </label>
+                <p className=" text-xs text-gray-500">
+                  Choose your concept style from the list
+                </p>
+              </div>
+              <select
+                id="style"
+                name="style"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.style}
+                className="block w-full border border-gray-300 rounded-md p-1 text-sm "
+              >
+                <option value="" disabled>
+                  Select a Room Type
+                </option>
+                {conceptStyles.map((type, index) => (
+                  <option key={index} value={type} className="capitalize">
+                    {type}
                   </option>
-                  {roomTypes.map((type, index) => (
-                    <option key={index} value={type} className="capitalize">
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                {formik.touched.type && formik.errors.type && (
-                  <p className="text-red-500 text-xs">{formik.errors.type}</p>
-                )}
-              </div>
+                ))}
+              </select>
+              {formik.touched.style && formik.errors.style && (
+                <p className="text-red-500 text-xs">{formik.errors.style}</p>
+              )}
+            </div>
+            <div>
               <div>
-                <div>
-                  <label htmlFor="price" className=" text-xs font-medium mt-4">
-                    Price
-                  </label>
-                  <p className=" text-xs text-gray-500">
-                    Enter your concept price here
-                  </p>
-                </div>
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.price}
-                  className="block w-full border border-gray-300 rounded-md p-1 text-sm"
-                />
-                {formik.touched.price && formik.errors.price && (
-                  <p className="text-red-500 text-xs">{formik.errors.price}</p>
-                )}
+                <label htmlFor="type" className=" text-xs font-medium mt-4">
+                  Room Type
+                </label>
+                <p className=" text-xs text-gray-500">
+                  Choose your room type from the list
+                </p>
               </div>
+              <select
+                id="type"
+                name="type"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.type}
+                className="block w-full border border-gray-300 rounded-md p-1 text-sm"
+              >
+                <option value="" disabled>
+                  Select a Room Type
+                </option>
+                {roomTypes.map((type, index) => (
+                  <option key={index} value={type} className="capitalize">
+                    {type}
+                  </option>
+                ))}
+              </select>
+              {formik.touched.type && formik.errors.type && (
+                <p className="text-red-500 text-xs">{formik.errors.type}</p>
+              )}
+            </div>
+            <div>
+              <div>
+                <label htmlFor="price" className=" text-xs font-medium mt-4">
+                  Price
+                </label>
+                <p className=" text-xs text-gray-500">
+                  Enter your concept price here
+                </p>
+              </div>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.price}
+                className="block w-full border border-gray-300 rounded-md p-1 text-sm mb-4"
+              />
+              {formik.touched.price && formik.errors.price && (
+                <p className="text-red-500 text-xs">{formik.errors.price}</p>
+              )}
             </div>
           </form>
         </div>
