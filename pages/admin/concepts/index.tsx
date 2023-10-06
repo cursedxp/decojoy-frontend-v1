@@ -104,7 +104,7 @@ const ConceptPage: React.FC = () => {
     const accessToken = await getAccessToken();
     const headers = getHeaders(accessToken);
     try {
-      const response = await axios.put(
+      const response = await axios.patch(
         process.env.NEXT_PUBLIC_API_URL + `/concepts/${id}/publish`,
         {},
         {
@@ -112,6 +112,34 @@ const ConceptPage: React.FC = () => {
         }
       );
       // Updating the data after publish
+      const updatedConcept = response.data;
+      setData((prevData) =>
+        prevData.map((concept) =>
+          concept.id === id ? updatedConcept : concept
+        )
+      );
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
+        console.log("Unauthorized");
+      } else {
+        console.log("Something went wrong");
+      }
+    }
+  };
+
+  const unPublishConcept = async (id: number): Promise<any> => {
+    const accessToken = await getAccessToken();
+    const headers = getHeaders(accessToken);
+    try {
+      const response = await axios.patch(
+        process.env.NEXT_PUBLIC_API_URL + `/concepts/${id}/unpublish`,
+        {},
+        {
+          headers: headers,
+        }
+      );
+      // Updating the data after unpublish
       const updatedConcept = response.data;
       setData((prevData) =>
         prevData.map((concept) =>
@@ -155,7 +183,12 @@ const ConceptPage: React.FC = () => {
           Create
         </button>
       </div>
-      <CustomTable data={data} onDelete={deleteConcept} />
+      <CustomTable
+        data={data}
+        onDelete={deleteConcept}
+        onPublish={publishConcept}
+        onUnPublish={unPublishConcept}
+      />
       <ToastContainer
         position="top-right"
         autoClose={3000}
