@@ -1,5 +1,7 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
-import Image from "next/image";
+
+import Link from "next/link";
+
 const Home: React.FC = () => {
   const { user, error, isLoading } = useUser();
 
@@ -9,11 +11,19 @@ const Home: React.FC = () => {
   if (user) {
     return (
       <div>
-        Welcome {user.name}! <a href="/api/auth/logout">Logout</a>
+        <ul>
+          <li>
+            <Link href={"admin/concepts"}>Concepts</Link>
+          </li>
+          <li>
+            <Link href={"admin/products"}>Projects</Link>
+          </li>
+        </ul>
+        Welcome {user.name}! <Link href="/api/auth/logout">Logout</Link>
       </div>
     );
   }
 
-  return <a href="/api/auth/login">Login</a>;
+  return <Link href="/api/auth/login">Login</Link>;
 };
 export default Home;
