@@ -5,6 +5,6 @@
 .custom-table {
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 1rem 1rem 1rem 1rem;
   overflow: hidden;
 }
