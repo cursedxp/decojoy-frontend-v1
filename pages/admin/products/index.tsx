@@ -11,6 +11,9 @@ const ProductsPage: React.FC = () => {
   const { response, error, isLoading, sendGetRequest } = useGetRequest(
     process.env.NEXT_PUBLIC_API_URL + "/products"
   );
+
+  const columns = ["Image", "Title", "Description", "Price", "Created At"];
+
   const onClose = () => {
     setShowModal(false);
   };
@@ -18,7 +21,6 @@ const ProductsPage: React.FC = () => {
   React.useEffect(() => {
     sendGetRequest();
   }, [sendGetRequest]);
-  console.log(response);
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
       <div className=" text-xs text-gray-500 uppercase ">
@@ -55,7 +57,7 @@ const ProductsPage: React.FC = () => {
       <Modal onClose={onClose} isOpen={showModal}>
         <ProductForm />
       </Modal>
-      <CustomTable data={response} />
+      <CustomTable data={response} columns={columns} />
     </main>
   );
 };
