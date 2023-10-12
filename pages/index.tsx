@@ -16,7 +16,7 @@ const Home: React.FC = () => {
             <Link href={"admin/concepts"}>Concepts</Link>
           </li>
           <li>
-            <Link href={"admin/products"}>Projects</Link>
+            <Link href={"admin/products"}>Products</Link>
           </li>
         </ul>
         Welcome {user.name}! <Link href="/api/auth/logout">Logout</Link>
