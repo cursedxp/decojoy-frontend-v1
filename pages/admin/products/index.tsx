@@ -4,13 +4,21 @@ import Modal from "@/app/components/Modal";
 import { ToastContainer, toast } from "react-toastify";
 import CustomTable from "@/app/components/CustomTable";
 import ProductForm from "@/app/components/ProductForm";
+import useGetRequest from "@/app/hooks/useGetRequest";
 
 const ProductsPage: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
+  const { response, error, isLoading, sendGetRequest } = useGetRequest(
+    process.env.NEXT_PUBLIC_API_URL + "/products"
+  );
   const onClose = () => {
     setShowModal(false);
   };
 
+  React.useEffect(() => {
+    sendGetRequest();
+  }, [sendGetRequest]);
+  console.log(response);
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
       <div className=" text-xs text-gray-500 uppercase ">
@@ -47,6 +55,7 @@ const ProductsPage: React.FC = () => {
       <Modal onClose={onClose} isOpen={showModal}>
         <ProductForm />
       </Modal>
+      <CustomTable data={response} />
     </main>
   );
 };
