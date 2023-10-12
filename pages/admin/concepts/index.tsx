@@ -18,6 +18,17 @@ interface Concept {
   createdAt: string;
 }
 
+const columns = [
+  "Thumbnail",
+  "Title",
+  "Description",
+  "Room Type",
+  "Style",
+  "Price",
+  "Created At",
+  "Status",
+];
+
 const ConceptPage: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
   const [data, setData] = React.useState<Concept[]>([]);
@@ -185,9 +196,10 @@ const ConceptPage: React.FC = () => {
       </div>
       <CustomTable
         data={data}
-        onDelete={deleteConcept}
-        onPublish={publishConcept}
-        onUnPublish={unPublishConcept}
+        // onDelete={deleteConcept}
+        // onPublish={publishConcept}
+        // onUnPublish={unPublishConcept}
+        columns={columns}
       />
       <ToastContainer
         position="top-right"
