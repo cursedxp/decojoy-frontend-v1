@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import usePostRequests from "../hooks/usePostRequests";
 
 const ProductForm: React.FC = () => {
-  const { response, error, isLoading, sendRequest } = usePostRequests(
+  const { response, error, isLoading, sendPostRequest } = usePostRequests(
     {},
     process.env.NEXT_PUBLIC_API_URL + "/products"
   );
@@ -32,7 +32,7 @@ const ProductForm: React.FC = () => {
       url: Yup.string().required("URL is required"),
     }),
     onSubmit: (values) => {
-      sendRequest(values);
+      sendPostRequest(values);
     },
   });
 
