@@ -35,21 +35,20 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
       year: "numeric",
     });
   }, []);
-  console.log(item);
   return (
     <tr>
-      {item.thumbnail ||
-        (item.imageUrl && (
-          <td className="py-3 px-6 border-gray-300">
-            <Image
-              src={item.thumbnail || item.imageUrl}
-              alt="thumbnail"
-              width={56}
-              height={56}
-              className=" rounded-md"
-            />
-          </td>
-        ))}
+      <td className="py-3 px-6 border-gray-300">
+        {item.thumbnail && (
+          <Image
+            src={item.thumbnail}
+            alt="thumbnail"
+            width={56}
+            height={56}
+            className=" rounded-md"
+          />
+        )}
+      </td>
+
       <td className="py-3 px-6  border-gray-300">{item.title}</td>
       {item.description && (
         <td className="py-3 px-6  border-gray-300">{item.description}</td>
