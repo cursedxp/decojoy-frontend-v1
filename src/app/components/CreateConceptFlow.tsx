@@ -71,6 +71,8 @@ const CreateConceptFlow: React.FC<CreateConceptFlowProps> = ({
     accessToken: string,
     formData: FormData
   ): Promise<any> => {
+    const folderName = "concepts";
+    formData.append("folderName", folderName);
     return await axios.post(API_ENDPOINT_FOR_IMAGES, formData, {
       headers: getUploadHeaders(accessToken, formData),
     });
