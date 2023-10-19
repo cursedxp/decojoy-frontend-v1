@@ -18,6 +18,10 @@ const ProductsPage: React.FC = () => {
     setShowModal(false);
   };
 
+  const onProductCreated = (message: any) => {
+    toast.success(message || "Product successfully created!");
+  };
+
   React.useEffect(() => {
     sendGetRequest();
   }, [sendGetRequest]);
@@ -55,7 +59,7 @@ const ProductsPage: React.FC = () => {
         theme="light"
       />
       <Modal onClose={onClose} isOpen={showModal}>
-        <ProductForm />
+        <ProductForm onProductCreated={onProductCreated} onClose={onClose} />
       </Modal>
       <CustomTable data={response} columns={columns} />
     </main>
