@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import Modal from "@/app/components/Modal";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,9 +14,10 @@ const ProductsPage: React.FC = () => {
 
   const columns = ["Image", "Title", "Description", "Price", "Created At"];
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     setShowModal(false);
-  };
+    sendGetRequest();
+  }, [sendGetRequest]);
 
   const onProductCreated = (message: any) => {
     toast.success(message || "Product successfully created!");
