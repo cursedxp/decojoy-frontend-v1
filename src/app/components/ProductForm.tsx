@@ -48,6 +48,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       sendPostRequest({
         ...values,
         image: getImageUrl[0],
+        thumbnail: getImageUrl[0],
       });
       onProductCreated("Product successfully created!");
       onClose();
