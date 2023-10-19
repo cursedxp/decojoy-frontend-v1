@@ -194,13 +194,7 @@ const ConceptPage: React.FC = () => {
           Create
         </button>
       </div>
-      <CustomTable
-        data={data}
-        // onDelete={deleteConcept}
-        // onPublish={publishConcept}
-        // onUnPublish={unPublishConcept}
-        columns={columns}
-      />
+      <CustomTable concepts={data} columns={columns} />
       <ToastContainer
         position="top-right"
         autoClose={3000}
