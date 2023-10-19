@@ -1,28 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios, { AxiosError } from "axios";
-import { toast } from "react-toastify";
 import usePostRequests from "../hooks/usePostRequests";
+import FileUploader from "./FileUploader";
+import axios, { AxiosError } from "axios";
+import useAccessToken from "../hooks/useAccessToken";
+
+//show preview image
 
 const ProductForm: React.FC = () => {
-  const { response, error, isLoading, sendPostRequest } = usePostRequests(
-    {},
-    process.env.NEXT_PUBLIC_API_URL + "/products"
-  );
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const { accessToken, error } = useAccessToken();
+
+  const { response, requestError, isLoading, sendPostRequest } =
+    usePostRequests({}, process.env.NEXT_PUBLIC_API_URL + "/products");
 
   const formik = useFormik({
     initialValues: {
       title: "",
-      image: "",
       description: "",
       category: "",
       price: 0,
       url: "",
+      image: "",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
-      image: Yup.string().required("Image is required"),
       description: Yup.string().required("Description is required"),
       category: Yup.string().required("Category is required"),
       price: Yup.number()
@@ -31,10 +34,50 @@ const ProductForm: React.FC = () => {
         .integer("Price must be an integer number"),
       url: Yup.string().required("URL is required"),
     }),
-    onSubmit: (values) => {
-      sendPostRequest(values);
+    onSubmit: async (values) => {
+      const getImageUrl = await handleUploadImage(selectedImages[0]);
+
+      sendPostRequest({
+        ...values,
+        image: getImageUrl[0],
+      });
     },
   });
+  const onFilesSelected = (files: File[]) => {
+    setSelectedImages(files);
+  };
+
+  const handleUploadImage = async (image: File) => {
+    const formData = new FormData();
+    formData.append("images", image);
+    formData.append("folderName", "products");
+    try {
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_API_URL + "/assets/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data.data.imageUrls;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // This error is specific to Axios requests
+        const axiosError = error as AxiosError;
+
+        // You can access various properties of AxiosError
+        console.error("Axios error:", axiosError.message);
+        console.error("Status code:", axiosError.response?.status);
+        console.error("Response data:", axiosError.response?.data);
+      } else {
+        // Handle other types of errors here
+        console.error("Non-Axios error:", error);
+      }
+    }
+  };
 
   return (
     <form className="mt-4 flex flex-col gap-3" onSubmit={formik.handleSubmit}>
@@ -81,27 +124,12 @@ const ProductForm: React.FC = () => {
         )}
       </div>
       <div>
-        <div>
-          <label htmlFor="image" className="text-xs font-medium">
-            Image URL
-          </label>
-          <p className=" text-xs text-gray-500">
-            Enter your product image here
-          </p>
-        </div>
-        <input
-          type="text"
-          id="image"
-          name="image"
-          onChange={formik.handleChange}
-          value={formik.values.image}
-          onBlur={formik.handleBlur}
-          className="block w-full border border-gray-300 rounded-md p-1 text-sm"
-        />
-        {formik.touched.image && formik.errors.image && (
-          <p className="text-red-500 text-xs">{formik.errors.image}</p>
-        )}
+        <label htmlFor="url" className="text-xs font-medium">
+          Image
+        </label>
+        <p className=" text-xs text-gray-500">Upload product image</p>
       </div>
+      <FileUploader onFilesSelected={onFilesSelected} />
       <div>
         <div>
           <label htmlFor="description" className="text-xs font-medium">

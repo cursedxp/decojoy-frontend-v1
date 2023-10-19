@@ -64,26 +64,28 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesSelected }) => {
           </div>
         )}
       </div>
-      <div className="my-4 flex gap-4">
-        {previewImageUrls.map((src, index) => (
-          <div key={index} className="relative group">
-            <img
-              src={src}
-              alt=""
-              className="rounded-xl hover:opacity-80"
-              onClick={() => removePreviewImage(index)}
-              title="Click to remove image"
-              width={96}
-            />
-            <div
-              className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-xl shadow-sm cursor-pointer"
-              onClick={() => removePreviewImage(index)}
-            >
-              <TrashIcon className="w-4 h-4 text-white" />
+      {previewImageUrls.length !== 0 && (
+        <div className="my-4 flex gap-4">
+          {previewImageUrls.map((src, index) => (
+            <div key={index} className="relative group">
+              <img
+                src={src}
+                alt=""
+                className="rounded-xl hover:opacity-80"
+                onClick={() => removePreviewImage(index)}
+                title="Click to remove image"
+                width={96}
+              />
+              <div
+                className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 bg-red-500 rounded-xl shadow-sm cursor-pointer"
+                onClick={() => removePreviewImage(index)}
+              >
+                <TrashIcon className="w-4 h-4 text-white" />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

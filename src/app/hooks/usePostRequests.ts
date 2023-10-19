@@ -4,7 +4,7 @@ import useHeaders from "./useHeaders";
 
 const usePostRequests = (data: any, apiUrl: string) => {
   const [response, setResponse] = useState<any[]>([]);
-  const [error, setError] = useState<any>(null);
+  const [requestError, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [headers, headersError] = useHeaders("application/json");
 
@@ -31,7 +31,7 @@ const usePostRequests = (data: any, apiUrl: string) => {
     [apiUrl, headers, headersError, data]
   );
 
-  return { response, error, isLoading, sendPostRequest };
+  return { response, requestError, isLoading, sendPostRequest };
 };
 
 export default usePostRequests;
