@@ -1,32 +1,22 @@
 import React, { useCallback } from "react";
 import Image from "next/image";
 import { TrashIcon, EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
+import CustomTableActions from "./CustomTableActions";
 interface CustomTableProps {
-  item: {
-    id: number;
-    title: string;
-    description?: string;
+  concept: {
     thumbnail?: string;
-    price: number;
-    style: string;
+    title?: string;
+    description?: string;
+    type?: string;
+    style?: string;
+    price?: number;
+    createdAt?: string;
     status?: string;
-    type: string;
-    createdAt: string;
-    imageUrl?: string;
-    category?: string;
-    url?: string;
+    id?: string;
   };
-
-  onDelete?: (id: number) => void;
-  onPublish?: (id: number) => void;
-  onUnPublish?: (id: number) => void;
 }
-const CustomTableRow: React.FC<CustomTableProps> = ({
-  item,
-  onDelete,
-  onPublish,
-  onUnPublish,
-}) => {
+
+const CustomTableRow: React.FC<CustomTableProps> = ({ concept }) => {
   const formatDate = useCallback((date: string) => {
     const newDate = new Date(date);
     return newDate.toLocaleDateString("eu-EU", {
@@ -38,9 +28,9 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
   return (
     <tr>
       <td className="py-3 px-6 border-gray-300">
-        {item.thumbnail && (
+        {concept.thumbnail && (
           <Image
-            src={item.thumbnail}
+            src={concept.thumbnail}
             alt="thumbnail"
             width={56}
             height={56}
@@ -49,35 +39,36 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
         )}
       </td>
 
-      <td className="py-3 px-6  border-gray-300">{item.title}</td>
-      {item.description && (
-        <td className="py-3 px-6  border-gray-300">{item.description}</td>
+      <td className="py-3 px-6  border-gray-300">{concept.title}</td>
+      {concept.description && (
+        <td className="py-3 px-6  border-gray-300">{concept.description}</td>
       )}
-      {item.type && (
+      {concept.type && (
         <td className="py-3 px-6  border-gray-300">
-          {item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase()}
+          {concept.type.charAt(0).toUpperCase() +
+            concept.type.slice(1).toLowerCase()}
         </td>
       )}
-      {item.style && (
+      {concept.style && (
         <td className="py-3 px-6  border-gray-300">
-          {item.style.charAt(0).toUpperCase() +
-            item.style.slice(1).toLowerCase()}
+          {concept.style.charAt(0).toUpperCase() +
+            concept.style.slice(1).toLowerCase()}
         </td>
       )}
-      {item.price && (
-        <td className="py-3 px-6  border-gray-300">{item.price}</td>
+      {concept.price && (
+        <td className="py-3 px-6  border-gray-300">{concept.price}</td>
       )}
 
-      {item.createdAt && (
+      {concept.createdAt && (
         <td className="py-3 px-6  border-gray-300">
-          {formatDate(item.createdAt)}
+          {formatDate(concept.createdAt)}
         </td>
       )}
-      {item.status && (
+      {concept.status && (
         <td className="py-3 px-6 border-gray-300">
           <div
             className={
-              (item.status.toLowerCase() === "published"
+              (concept.status.toLowerCase() === "published"
                 ? "bg-green-300 rounded-xl "
                 : "bg-orange-300 rounded-xl ") + "w-4 h-4"
             }
@@ -86,29 +77,7 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
       )}
 
       <td className="py-3 px-6  border-gray-300">
-        {/* <div className="flex gap-2">
-        <button
-          className=" hover:bg-red-100  text-red-500 font-bold p-2 rounded-xl"
-          onClick={() => onDelete(item.id)}
-        >
-          <TrashIcon className="h-5 w-5" />
-        </button>
-        {item.status === "PUBLISHED" ? (
-          <button
-            className="  hover:bg-orange-100 text-orange-400 p-2 rounded-xl"
-            onClick={() => onUnPublish(item.id)}
-          >
-            <EyeSlashIcon className="h-5 w-5" />
-          </button>
-        ) : (
-          <button
-            className="  hover:bg-green-100 text-green-700 p-2 rounded-xl"
-            onClick={() => onPublish(item.id)}
-          >
-            <EyeIcon className="h-5 w-5" />
-          </button>
-        )}
-      </div> */}
+        {/* <CustomTableActions conceptId={concept.id} status={concept.status} /> */}
       </td>
     </tr>
   );
