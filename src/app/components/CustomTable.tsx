@@ -4,26 +4,16 @@ import CustomTableHead from "./CustomTableHead";
 import CustomTableRow from "./CustomTableRow";
 
 interface CustomTableProps {
-  data: {
-    id: number;
-    title: string;
-    description: string;
-    thumbnail: string;
-    price: number;
-    style: string;
-    status: string;
-    type: string;
-    createdAt: string;
-  }[];
+  concepts: object[];
   columns: string[];
 }
 
-const CustomTable: React.FC<CustomTableProps> = ({ data, columns }) => {
+const CustomTable: React.FC<CustomTableProps> = ({ concepts, columns }) => {
   return (
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
       <table className="min-w-full custom-table bg-white">
         <CustomTableHead columns={columns} />
-        {data.length === 0 && (
+        {concepts.length === 0 && (
           <tbody className="text-gray-700">
             <tr>
               <td
@@ -36,9 +26,9 @@ const CustomTable: React.FC<CustomTableProps> = ({ data, columns }) => {
           </tbody>
         )}
         <tbody className="text-gray-700 ">
-          {data.map((item) => {
-            const uniqKey = uuidv4();
-            return <CustomTableRow key={uniqKey} item={item} />;
+          {concepts.map((concept) => {
+            const key = uuidv4();
+            return <CustomTableRow key={key} concept={concept} />;
           })}
         </tbody>
       </table>
