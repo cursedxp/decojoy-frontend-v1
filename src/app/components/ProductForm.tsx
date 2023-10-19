@@ -8,7 +8,15 @@ import useAccessToken from "../hooks/useAccessToken";
 
 //show preview image
 
-const ProductForm: React.FC = () => {
+interface ProductFormProps {
+  onProductCreated: (message: string) => void;
+  onClose: () => void;
+}
+
+const ProductForm: React.FC<ProductFormProps> = ({
+  onProductCreated,
+  onClose,
+}) => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const { accessToken, error } = useAccessToken();
 
@@ -41,6 +49,8 @@ const ProductForm: React.FC = () => {
         ...values,
         image: getImageUrl[0],
       });
+      onProductCreated("Product successfully created!");
+      onClose();
     },
   });
   const onFilesSelected = (files: File[]) => {
