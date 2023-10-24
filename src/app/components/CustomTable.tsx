@@ -6,9 +6,18 @@ import CustomTableRow from "./CustomTableRow";
 interface CustomTableProps {
   concepts: object[];
   columns: string[];
+  onRemove?: (id: string | undefined) => void;
+  onPublish?: (id: string | undefined) => void;
+  onUnpublish?: (id: string | undefined) => void;
 }
 
-const CustomTable: React.FC<CustomTableProps> = ({ concepts, columns }) => {
+const CustomTable: React.FC<CustomTableProps> = ({
+  concepts,
+  columns,
+  onRemove,
+  onPublish,
+  onUnpublish,
+}) => {
   return (
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
       <table className="min-w-full custom-table bg-white">
@@ -28,7 +37,15 @@ const CustomTable: React.FC<CustomTableProps> = ({ concepts, columns }) => {
         <tbody className="text-gray-700 ">
           {concepts.map((concept) => {
             const key = uuidv4();
-            return <CustomTableRow key={key} concept={concept} />;
+            return (
+              <CustomTableRow
+                key={key}
+                item={concept}
+                onRemove={onRemove}
+                onPublish={onPublish}
+                onUnPublish={onUnpublish}
+              />
+            );
           })}
         </tbody>
       </table>
