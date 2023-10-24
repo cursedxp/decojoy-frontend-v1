@@ -12,11 +12,11 @@ interface CustomTableProps {
     price?: number;
     createdAt?: string;
     status?: string;
-    id?: string;
+    id?: number;
   };
-  onRemove?: (id: string | undefined) => void;
-  onPublish?: (id: string | undefined) => void;
-  onUnPublish?: (id: string | undefined) => void;
+  onRemove?: (id: number) => void;
+  onPublish?: (id: number) => void;
+  onUnPublish?: (id: number) => void;
 }
 
 const CustomTableRow: React.FC<CustomTableProps> = ({
@@ -87,7 +87,7 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
           <button
             className=" hover:bg-red-100  text-red-500 font-bold p-2 rounded-xl"
             onClick={() => {
-              if (onRemove) {
+              if (item.id && onRemove) {
                 onRemove(item.id);
               }
             }}
@@ -98,7 +98,7 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
             <button
               className="hover:bg-orange-100 text-orange-400 p-2 rounded-xl"
               onClick={() => {
-                if (onUnPublish) {
+                if (item.id && onUnPublish) {
                   onUnPublish(item.id);
                 }
               }}
@@ -109,7 +109,7 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
             <button
               className="hover:bg-green-100 text-green-700 p-2 rounded-xl"
               onClick={() => {
-                if (onPublish) {
+                if (item.id && onPublish) {
                   onPublish(item.id);
                 }
               }}

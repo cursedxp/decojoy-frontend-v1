@@ -6,9 +6,9 @@ import CustomTableRow from "./CustomTableRow";
 interface CustomTableProps {
   concepts: object[];
   columns: string[];
-  onRemove?: (id: string | undefined) => void;
-  onPublish?: (id: string | undefined) => void;
-  onUnpublish?: (id: string | undefined) => void;
+  onRemove?: (id: number) => Promise<any>;
+  onPublish?: (id: number) => Promise<any>;
+  onUnpublish?: (id: number) => Promise<any>;
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
