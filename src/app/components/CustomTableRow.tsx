@@ -83,7 +83,7 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
         </td>
       )}
       <td className="py-3 px-6  border-gray-300">
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           <button
             className=" hover:bg-red-100  text-red-500 font-bold p-2 rounded-xl"
             onClick={() => {
@@ -94,28 +94,32 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
           >
             <TrashIcon className="h-5 w-5" />
           </button>
-          {item.status === "PUBLISHED" ? (
-            <button
-              className="hover:bg-orange-100 text-orange-400 p-2 rounded-xl"
-              onClick={() => {
-                if (item.id && onUnPublish) {
-                  onUnPublish(item.id);
-                }
-              }}
-            >
-              <EyeSlashIcon className="h-5 w-5" />
-            </button>
-          ) : (
-            <button
-              className="hover:bg-green-100 text-green-700 p-2 rounded-xl"
-              onClick={() => {
-                if (item.id && onPublish) {
-                  onPublish(item.id);
-                }
-              }}
-            >
-              <EyeIcon className="h-5 w-5" />
-            </button>
+          {item.status && (
+            <div>
+              {item.status === "PUBLISHED" ? (
+                <button
+                  className="hover:bg-orange-100 text-orange-400 p-2 rounded-xl"
+                  onClick={() => {
+                    if (item.id && onUnPublish) {
+                      onUnPublish(item.id);
+                    }
+                  }}
+                >
+                  <EyeSlashIcon className="h-5 w-5" />
+                </button>
+              ) : (
+                <button
+                  className="hover:bg-green-100 text-green-700 p-2 rounded-xl"
+                  onClick={() => {
+                    if (item.id && onPublish) {
+                      onPublish(item.id);
+                    }
+                  }}
+                >
+                  <EyeIcon className="h-5 w-5" />
+                </button>
+              )}
+            </div>
           )}
         </div>
       </td>
