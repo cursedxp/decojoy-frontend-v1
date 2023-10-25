@@ -5,7 +5,7 @@ import CustomTable from "../../../src/app/components/CustomTable";
 import Modal from "@/app/components/Modal";
 import CreateConceptFlow from "@/app/components/CreateConceptFlow";
 import { ToastContainer, toast } from "react-toastify";
-
+import useDeleteRequest from "@/app/hooks/useDeleteRequest";
 interface Concept {
   id: number;
   title: string;
@@ -27,9 +27,17 @@ const columns = [
   "Price",
   "Created At",
   "Status",
+  "Actions",
 ];
 
 const ConceptPage: React.FC = () => {
+  const {
+    response: deleteResponse,
+    error: deleteError,
+    isLoading: deleteIsLoading,
+    sendDeleteRequest,
+  } = useDeleteRequest(process.env.NEXT_PUBLIC_API_URL + "/concepts");
+
   const [showModal, setShowModal] = React.useState(false);
   const [data, setData] = React.useState<Concept[]>([]);
 
@@ -89,29 +97,15 @@ const ConceptPage: React.FC = () => {
     };
   };
 
-  const deleteConcept = async (id: number): Promise<any> => {
-    const accessToken = await getAccessToken();
-    const headers = getHeaders(accessToken);
-    try {
-      const response = await axios.delete(
-        process.env.NEXT_PUBLIC_API_URL + `/concepts/${id}`,
-        {
-          headers: headers,
-        }
-      );
-      // Updating the data after delete
-      setData((prevData) => prevData.filter((concept) => concept.id !== id));
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response?.status === 401) {
-        console.log("Unauthorized");
-      } else {
-        console.log("Something went wrong");
-      }
+  const deleteConcept = useCallback(async (id: number) => {
+    await sendDeleteRequest(id);
+    if (deleteResponse) {
+      toast.success("Concept successfully deleted!");
+      fetchConceptData();
     }
-  };
+  }, []);
 
-  const publishConcept = async (id: number): Promise<any> => {
+  const publishConcept = useCallback(async (id: number): Promise<any> => {
     const accessToken = await getAccessToken();
     const headers = getHeaders(accessToken);
     try {
@@ -137,9 +131,9 @@ const ConceptPage: React.FC = () => {
         console.log("Something went wrong");
       }
     }
-  };
+  }, []);
 
-  const unPublishConcept = async (id: number): Promise<any> => {
+  const unPublishConcept = useCallback(async (id: number): Promise<any> => {
     const accessToken = await getAccessToken();
     const headers = getHeaders(accessToken);
     try {
@@ -165,7 +159,7 @@ const ConceptPage: React.FC = () => {
         console.log("Something went wrong");
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchConceptData();
@@ -195,7 +189,7 @@ const ConceptPage: React.FC = () => {
         </button>
       </div>
       <CustomTable
-        concepts={data}
+        items={data}
         columns={columns}
         onRemove={deleteConcept}
         onPublish={publishConcept}
