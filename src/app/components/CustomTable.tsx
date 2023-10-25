@@ -4,15 +4,15 @@ import CustomTableHead from "./CustomTableHead";
 import CustomTableRow from "./CustomTableRow";
 
 interface CustomTableProps {
-  concepts: object[];
+  items: object[];
   columns: string[];
-  onRemove?: (id: number) => Promise<any>;
+  onRemove?: (id: number) => void;
   onPublish?: (id: number) => Promise<any>;
   onUnpublish?: (id: number) => Promise<any>;
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
-  concepts,
+  items,
   columns,
   onRemove,
   onPublish,
@@ -22,7 +22,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
       <table className="min-w-full custom-table bg-white">
         <CustomTableHead columns={columns} />
-        {concepts.length === 0 && (
+        {items.length === 0 && (
           <tbody className="text-gray-700">
             <tr>
               <td
@@ -35,12 +35,12 @@ const CustomTable: React.FC<CustomTableProps> = ({
           </tbody>
         )}
         <tbody className="text-gray-700 ">
-          {concepts.map((concept) => {
+          {items.map((item) => {
             const key = uuidv4();
             return (
               <CustomTableRow
                 key={key}
-                item={concept}
+                item={item}
                 onRemove={onRemove}
                 onPublish={onPublish}
                 onUnPublish={onUnpublish}
