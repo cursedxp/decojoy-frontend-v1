@@ -5,19 +5,45 @@ import { ToastContainer, toast } from "react-toastify";
 import CustomTable from "@/app/components/CustomTable";
 import ProductForm from "@/app/components/ProductForm";
 import useGetRequest from "@/app/hooks/useGetRequest";
+import useDeleteRequest from "@/app/hooks/useDeleteRequest";
+import { send } from "process";
+
+const columns = [
+  "Image",
+  "Title",
+  "Description",
+  "Price",
+  "Created At",
+  "Actions",
+];
 
 const ProductsPage: React.FC = () => {
+  const {
+    response: deleteResponse,
+    error: deleteError,
+    isLoading: deleteIsLoading,
+    sendDeleteRequest,
+  } = useDeleteRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
   const [showModal, setShowModal] = React.useState(false);
-  const { response, error, isLoading, sendGetRequest } = useGetRequest(
-    process.env.NEXT_PUBLIC_API_URL + "/products"
-  );
-
-  const columns = ["Image", "Title", "Description", "Price", "Created At"];
+  const {
+    response: getResponse,
+    error: getError,
+    isLoading: getIsLoading,
+    sendGetRequest,
+  } = useGetRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
 
   const onClose = useCallback(() => {
     setShowModal(false);
     sendGetRequest();
   }, [sendGetRequest]);
+
+  const removeProduct = useCallback(async (id: number) => {
+    await sendDeleteRequest(id);
+    if (deleteResponse) {
+      toast.success("Product successfully deleted!");
+      sendGetRequest();
+    }
+  }, []);
 
   const onProductCreated = (message: any) => {
     toast.success(message || "Product successfully created!");
@@ -25,6 +51,9 @@ const ProductsPage: React.FC = () => {
 
   React.useEffect(() => {
     sendGetRequest();
+    if (deleteError) {
+      toast.error(deleteError.message || "Error deleting product.");
+    }
   }, [sendGetRequest]);
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
@@ -62,7 +91,11 @@ const ProductsPage: React.FC = () => {
       <Modal onClose={onClose} isOpen={showModal}>
         <ProductForm onProductCreated={onProductCreated} onClose={onClose} />
       </Modal>
-      <CustomTable data={response} columns={columns} />
+      <CustomTable
+        items={getResponse}
+        columns={columns}
+        onRemove={removeProduct}
+      />
     </main>
   );
 };
