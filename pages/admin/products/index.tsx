@@ -43,36 +43,53 @@ const ProductsPage: React.FC = () => {
 
   const [data, setData] = React.useState<Product[]>([]);
 
-  const onClose = useCallback(() => {
+  const onClose = useCallback(async () => {
     setShowModal(false);
-    sendGetRequest();
-    setData(getResponse);
+    await sendGetRequest();
+    if (getResponse) {
+      setData(getResponse);
+    } else {
+      console.error("Failed to fetch the updated product list.");
+    }
   }, [sendGetRequest]);
 
-  const removeProduct = useCallback(async (id: number) => {
-    await sendDeleteRequest(id);
-    if (deleteResponse) {
-      toast.success("Product successfully deleted!");
-      sendGetRequest();
-      setData(getResponse);
-    }
-  }, []);
+  const removeProduct = useCallback(
+    async (id: number) => {
+      const response = await sendDeleteRequest(id);
+      if (deleteResponse) {
+        toast.success("Product successfully deleted!");
+        await sendGetRequest();
+        setData(getResponse || []);
+      }
+    },
+    [sendDeleteRequest, sendGetRequest]
+  );
 
   const onProductCreated = (message: any) => {
     toast.success(message || "Product successfully created!");
   };
 
   React.useEffect(() => {
-    sendGetRequest();
+    const fetchData = async () => {
+      await sendGetRequest();
+    };
+    fetchData();
+  }, [sendGetRequest]);
+
+  React.useEffect(() => {
+    if (getResponse !== null) {
+      setData(getResponse);
+    }
+  }, [getResponse]);
+
+  React.useEffect(() => {
     if (deleteError) {
       toast.error(deleteError.message || "Error deleting product.");
     }
-  }, [sendGetRequest, deleteError]);
-
-  console.log("Get Response", getResponse);
+  }, [deleteError]);
 
   return (
-    <main className="p-16 flex-col h-screen  bg-stone-100">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 p-16 flex-col h-screen">
       <div className=" text-xs text-gray-500 uppercase ">
         Admin / <span className=" text-sky-500 font-semibold">Products</span>
       </div>
@@ -107,14 +124,13 @@ const ProductsPage: React.FC = () => {
       <Modal onClose={onClose} isOpen={showModal}>
         <ProductForm onProductCreated={onProductCreated} onClose={onClose} />
       </Modal>
-
       <CustomTable
-        items={getResponse}
+        items={data}
         columns={columns}
         onRemove={removeProduct}
         contentUrl="products"
       />
-    </main>
+    </div>
   );
 };
 
