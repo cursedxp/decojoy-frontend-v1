@@ -6,7 +6,11 @@ const usePostRequests = (data: any, apiUrl: string) => {
   const [response, setResponse] = useState<any[]>([]);
   const [requestError, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [headers, headersError] = useHeaders("application/json");
+  const {
+    headers,
+    isReady,
+    error: headersError,
+  } = useHeaders("application/json");
 
   const sendPostRequest = useCallback(
     async (requestData = data) => {
