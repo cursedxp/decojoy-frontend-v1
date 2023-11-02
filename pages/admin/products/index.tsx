@@ -6,7 +6,7 @@ import CustomTable from "@/app/components/CustomTable";
 import ProductForm from "@/app/components/ProductForm";
 import useGetRequest from "@/app/hooks/useGetRequest";
 import useDeleteRequest from "@/app/hooks/useDeleteRequest";
-import { send } from "process";
+import { set } from "@auth0/nextjs-auth0/dist/session";
 
 const columns = [
   "Image",
@@ -16,6 +16,15 @@ const columns = [
   "Created At",
   "Actions",
 ];
+
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  thumbnail: string;
+  price: number;
+  createdAt: string;
+}
 
 const ProductsPage: React.FC = () => {
   const {
@@ -32,9 +41,12 @@ const ProductsPage: React.FC = () => {
     sendGetRequest,
   } = useGetRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
 
+  const [data, setData] = React.useState<Product[]>([]);
+
   const onClose = useCallback(() => {
     setShowModal(false);
     sendGetRequest();
+    setData(getResponse);
   }, [sendGetRequest]);
 
   const removeProduct = useCallback(async (id: number) => {
@@ -42,6 +54,7 @@ const ProductsPage: React.FC = () => {
     if (deleteResponse) {
       toast.success("Product successfully deleted!");
       sendGetRequest();
+      setData(getResponse);
     }
   }, []);
 
@@ -54,7 +67,10 @@ const ProductsPage: React.FC = () => {
     if (deleteError) {
       toast.error(deleteError.message || "Error deleting product.");
     }
-  }, [sendGetRequest]);
+  }, [sendGetRequest, deleteError]);
+
+  console.log("Get Response", getResponse);
+
   return (
     <main className="p-16 flex-col h-screen  bg-stone-100">
       <div className=" text-xs text-gray-500 uppercase ">
@@ -91,10 +107,12 @@ const ProductsPage: React.FC = () => {
       <Modal onClose={onClose} isOpen={showModal}>
         <ProductForm onProductCreated={onProductCreated} onClose={onClose} />
       </Modal>
+
       <CustomTable
         items={getResponse}
         columns={columns}
         onRemove={removeProduct}
+        contentUrl="products"
       />
     </main>
   );
