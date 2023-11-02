@@ -6,6 +6,7 @@ import CustomTableRow from "./CustomTableRow";
 interface CustomTableProps {
   items: object[];
   columns: string[];
+  contentUrl: string;
   onRemove?: (id: number) => void;
   onPublish?: (id: number) => Promise<any>;
   onUnpublish?: (id: number) => Promise<any>;
@@ -17,6 +18,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
   onRemove,
   onPublish,
   onUnpublish,
+  contentUrl,
 }) => {
   return (
     <div className="flex border border-gray-300 text-sm rounded-2xl  my-4 shadow-sm">
@@ -44,6 +46,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 onRemove={onRemove}
                 onPublish={onPublish}
                 onUnPublish={onUnpublish}
+                contentUrl={contentUrl}
               />
             );
           })}

@@ -2,6 +2,9 @@ import React, { useCallback } from "react";
 import Image from "next/image";
 import { TrashIcon, EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { on } from "events";
+import Link from "next/link";
+import { useRouter } from "next/router";
+
 interface CustomTableProps {
   item: {
     thumbnail?: string;
@@ -14,6 +17,7 @@ interface CustomTableProps {
     status?: string;
     id?: number;
   };
+  contentUrl: string;
   onRemove?: (id: number) => void;
   onPublish?: (id: number) => void;
   onUnPublish?: (id: number) => void;
@@ -24,7 +28,10 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
   onRemove,
   onPublish,
   onUnPublish,
+  contentUrl,
 }) => {
+  const router = useRouter();
+
   const formatDate = useCallback((date: string) => {
     const newDate = new Date(date);
     return newDate.toLocaleDateString("eu-EU", {
@@ -33,8 +40,18 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
       year: "numeric",
     });
   }, []);
+
+  const handleRowClick = useCallback(() => {
+    router.push(`/admin/${contentUrl}/${item.id}`);
+  }, [item.id, contentUrl]);
+
   return (
-    <tr>
+    <tr
+      onClick={() => {
+        handleRowClick();
+      }}
+      className="hover:bg-gray-200 cursor-pointer"
+    >
       <td className="py-3 px-6 border-gray-300">
         {item.thumbnail && (
           <Image
