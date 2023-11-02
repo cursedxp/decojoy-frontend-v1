@@ -6,7 +6,11 @@ const useDeleteRequest = (apiUrl: string) => {
   const [response, setResponse] = useState<any[]>([]);
   const [error, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [headers, headersError] = useHeaders("application/json");
+  const {
+    headers,
+    isReady,
+    error: headersError,
+  } = useHeaders("application/json");
 
   const sendDeleteRequest = async (id: number) => {
     if (!headers) {
