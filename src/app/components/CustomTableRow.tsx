@@ -63,7 +63,6 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
           />
         )}
       </td>
-
       <td className="py-3 px-6  border-gray-300">{item.title}</td>
       {item.description && (
         <td className="py-3 px-6  border-gray-300">{item.description}</td>
@@ -79,8 +78,8 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
             item.style.slice(1).toLowerCase()}
         </td>
       )}
-      {item.price && (
-        <td className="py-3 px-6  border-gray-300">{item.price}</td>
+      {item.price !== null && item.price !== undefined && (
+        <td className="py-3 px-6 border-gray-300">{item.price}</td>
       )}
 
       {item.createdAt && (
@@ -103,7 +102,8 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
         <div className="flex gap-2 ">
           <button
             className=" hover:bg-red-100  text-red-500 font-bold p-2 rounded-xl"
-            onClick={() => {
+            onClick={(event) => {
+              event.stopPropagation();
               if (item.id && onRemove) {
                 onRemove(item.id);
               }
@@ -116,7 +116,8 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
               {item.status === "PUBLISHED" ? (
                 <button
                   className="hover:bg-orange-100 text-orange-400 p-2 rounded-xl"
-                  onClick={() => {
+                  onClick={(event) => {
+                    event.stopPropagation();
                     if (item.id && onUnPublish) {
                       onUnPublish(item.id);
                     }
@@ -127,7 +128,8 @@ const CustomTableRow: React.FC<CustomTableProps> = ({
               ) : (
                 <button
                   className="hover:bg-green-100 text-green-700 p-2 rounded-xl"
-                  onClick={() => {
+                  onClick={(event) => {
+                    event.stopPropagation();
                     if (item.id && onPublish) {
                       onPublish(item.id);
                     }
