@@ -194,6 +194,7 @@ const ConceptPage: React.FC = () => {
         onRemove={deleteConcept}
         onPublish={publishConcept}
         onUnpublish={unPublishConcept}
+        contentUrl="concepts"
       />
       <ToastContainer
         position="top-right"
