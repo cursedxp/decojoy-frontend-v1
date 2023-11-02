@@ -3,33 +3,35 @@ import useHeaders from "./useHeaders";
 import axios from "axios";
 
 const useGetRequest = (apiUrl: string) => {
-  const [response, setResponse] = useState<any[]>([]);
+  const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [headers, headersError] = useHeaders("application/json");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    headers,
+    isReady,
+    error: headersError,
+  } = useHeaders("application/json");
 
   const sendGetRequest = useCallback(async () => {
-    if (!headers) {
+    if (!apiUrl || !isReady) {
       setError({
-        message: "Headers are missing or incorrect.",
+        message: !apiUrl ? "API URL is missing." : "Headers are not ready.",
         details: headersError,
       });
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await axios.get(apiUrl, { headers: headers.headers });
-      setResponse(response.data);
+      const res = await axios.get(apiUrl, { headers: headers?.headers });
+      setResponse(res.data);
     } catch (apiError) {
-      setError({
-        message: "API call failed.",
-        details: apiError,
-      });
+      setError({ message: "API call failed.", details: apiError });
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl, headers, headersError]);
+  }, [apiUrl, headers, isReady, headersError]);
 
   return { response, error, isLoading, sendGetRequest };
 };
