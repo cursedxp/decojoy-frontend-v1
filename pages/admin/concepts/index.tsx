@@ -166,7 +166,7 @@ const ConceptPage: React.FC = () => {
   }, [fetchConceptData]);
 
   return (
-    <main className="p-16 flex-col h-screen  bg-stone-100">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 p-16 flex-col h-screen">
       <div className=" text-xs text-gray-500 uppercase ">
         Admin / <span className=" text-sky-500 font-semibold">Concepts</span>
       </div>
@@ -214,7 +214,7 @@ const ConceptPage: React.FC = () => {
           onClose={onClose}
         />
       </Modal>
-    </main>
+    </div>
   );
 };
 
