@@ -28,7 +28,6 @@ interface ConceptDetailsType {
 }
 
 const ConceptDetails: React.FC = () => {
-  console.log("Component Loaded");
   const router = useRouter();
   const { id } = router.query;
 
@@ -53,8 +52,6 @@ const ConceptDetails: React.FC = () => {
       console.error("Error fetching concept details:", error);
     }
   }, [response, isLoading, error]);
-
-  console.log("conceptDetails", conceptDetails);
 
   return (
     <div>
