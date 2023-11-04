@@ -9,19 +9,17 @@ import useAccessToken from "../hooks/useAccessToken";
 //show preview image
 
 interface ProductFormProps {
-  onProductCreated: (message: string) => void;
   onClose: () => void;
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({
-  onProductCreated,
-  onClose,
-}) => {
+const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const { accessToken, error } = useAccessToken();
 
-  const { response, requestError, isLoading, sendPostRequest } =
-    usePostRequests({}, process.env.NEXT_PUBLIC_API_URL + "/products");
+  const { response, requestError, isLoading, sendPostRequest } = usePostRequests(
+    {},
+    process.env.NEXT_PUBLIC_API_URL + "/products"
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -50,7 +48,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         image: getImageUrl[0],
         thumbnail: getImageUrl[0],
       });
-      onProductCreated("Product successfully created!");
       onClose();
     },
   });
@@ -97,9 +94,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <label htmlFor="title" className="text-xs font-medium">
             Title
           </label>
-          <p className=" text-xs text-gray-500">
-            Enter your product title here
-          </p>
+          <p className=" text-xs text-gray-500">Enter your product title here</p>
         </div>
         <input
           type="text"
@@ -146,9 +141,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <label htmlFor="description" className="text-xs font-medium">
             Description
           </label>
-          <p className=" text-xs text-gray-500">
-            Enter your product description here
-          </p>
+          <p className=" text-xs text-gray-500">Enter your product description here</p>
         </div>
         <textarea
           id="description"
@@ -167,9 +160,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <label htmlFor="category" className="text-xs font-medium">
             Category
           </label>
-          <p className=" text-xs text-gray-500">
-            Enter your product category here
-          </p>
+          <p className=" text-xs text-gray-500">Enter your product category here</p>
         </div>
         <input
           type="text"
@@ -190,9 +181,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <label htmlFor="price" className="text-xs font-medium">
             Price
           </label>
-          <p className=" text-xs text-gray-500">
-            Enter your product price here
-          </p>
+          <p className=" text-xs text-gray-500">Enter your product price here</p>
         </div>
         <input
           type="number"
