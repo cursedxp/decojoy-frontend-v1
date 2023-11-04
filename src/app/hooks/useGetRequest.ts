@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import useHeaders from "./useHeaders";
 import axios from "axios";
 
 const useGetRequest = (apiUrl: string) => {
   const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     headers,
     isReady,
@@ -13,12 +13,11 @@ const useGetRequest = (apiUrl: string) => {
   } = useHeaders("application/json");
 
   const sendGetRequest = useCallback(async () => {
-    if (!apiUrl || !isReady) {
-      setError({
-        message: !apiUrl ? "API URL is missing." : "Headers are not ready.",
-        details: headersError,
-      });
-      setIsLoading(false);
+    if (!apiUrl) {
+      setError({ message: "API URL is missing.", details: null });
+      return;
+    }
+    if (!isReady) {
       return;
     }
 
@@ -31,7 +30,17 @@ const useGetRequest = (apiUrl: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl, headers, isReady, headersError]);
+  }, [apiUrl, headers, isReady]);
+
+  useEffect(() => {
+    if (!isReady && headersError) {
+      setError({
+        message: "Headers are not ready.",
+        details: headersError,
+      });
+      setIsLoading(false);
+    }
+  }, [isReady, headersError]);
 
   return { response, error, isLoading, sendGetRequest };
 };
