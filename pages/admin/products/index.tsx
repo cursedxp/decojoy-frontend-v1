@@ -1,12 +1,13 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import Modal from "@/app/components/Modal";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import CustomTable from "@/app/components/CustomTable";
 import ProductForm from "@/app/components/ProductForm";
 import useGetRequest from "@/app/hooks/useGetRequest";
 import useDeleteRequest from "@/app/hooks/useDeleteRequest";
-import { set } from "@auth0/nextjs-auth0/dist/session";
+import useToastNotification from "@/app/hooks/useToastNotifications";
+import { get } from "http";
 
 const columns = [
   "Image",
@@ -41,52 +42,56 @@ const ProductsPage: React.FC = () => {
     sendGetRequest,
   } = useGetRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
 
+  const { notifySuccess, notifyError } = useToastNotification();
+
   const [data, setData] = React.useState<Product[]>([]);
 
   const onClose = useCallback(async () => {
     setShowModal(false);
-    await sendGetRequest();
-    if (getResponse) {
-      setData(getResponse);
-    } else {
-      console.error("Failed to fetch the updated product list.");
+    try {
+      await sendGetRequest();
+      notifySuccess("Product successfully created!");
+      setData(getResponse || []);
+    } catch (err) {
+      notifyError("Error fetching products.");
     }
-  }, [sendGetRequest]);
+  }, [sendGetRequest, notifyError, notifySuccess, getResponse]);
 
   const removeProduct = useCallback(
     async (id: number) => {
-      const response = await sendDeleteRequest(id);
-      if (deleteResponse) {
-        toast.success("Product successfully deleted!");
+      try {
+        await sendDeleteRequest(id);
+        notifySuccess("Product successfully deleted!");
         await sendGetRequest();
         setData(getResponse || []);
+      } catch (err) {
+        notifyError("Error deleting product.");
       }
     },
-    [sendDeleteRequest, sendGetRequest]
+    [sendDeleteRequest, sendGetRequest, notifySuccess, notifyError]
   );
 
-  const onProductCreated = (message: any) => {
-    toast.success(message || "Product successfully created!");
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       await sendGetRequest();
     };
     fetchData();
   }, [sendGetRequest]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (getResponse !== null) {
       setData(getResponse);
     }
   }, [getResponse]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (deleteError) {
-      toast.error(deleteError.message || "Error deleting product.");
+      notifyError(deleteError.message || "Error deleting product.");
     }
-  }, [deleteError]);
+    if (getError) {
+      notifyError(getError.message || "Error fetching products.");
+    }
+  }, [deleteError, getError, notifyError]);
 
   return (
     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 p-16 flex-col h-screen">
@@ -109,20 +114,9 @@ const ProductsPage: React.FC = () => {
           Create
         </button>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <ToastContainer />
       <Modal onClose={onClose} isOpen={showModal}>
-        <ProductForm onProductCreated={onProductCreated} onClose={onClose} />
+        <ProductForm onClose={onClose} />
       </Modal>
       <CustomTable
         items={data}
