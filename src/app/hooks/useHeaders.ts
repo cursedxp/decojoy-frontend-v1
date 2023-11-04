@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useAccessToken from "./useAccessToken";
-import { set } from "@auth0/nextjs-auth0/dist/session";
 
 interface Headers {
   headers: {
@@ -10,27 +9,33 @@ interface Headers {
 }
 
 const useHeaders = (contentType: string) => {
-  const [headers, setHeaders] = useState<Headers>();
-  const [error, setError] = useState<any>(null);
+  const [headers, setHeaders] = useState<Headers | undefined>(undefined);
+  // const [error, setError] = useState<any>(null);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const { accessToken, error: accessTokenError } = useAccessToken();
+  const { accessToken, isLoading, error: accessTokenError } = useAccessToken();
+
+  const prepareHeaders = useCallback(() => {
+    if (!isLoading) {
+      if (accessToken) {
+        setHeaders({
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": contentType,
+          },
+        });
+        setIsReady(true);
+      } else if (accessTokenError) {
+        console.error("accessTokenError", accessTokenError);
+        setIsReady(false);
+      }
+    }
+  }, [accessToken, contentType, accessTokenError, isLoading]);
 
   useEffect(() => {
-    if (accessToken) {
-      setHeaders({
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": contentType,
-        },
-      });
-      setIsReady(true);
-    } else if (accessTokenError) {
-      setError(accessTokenError);
-      setIsReady(false);
-    }
-  }, [contentType, accessToken, accessTokenError]);
+    prepareHeaders();
+  }, [prepareHeaders]);
 
-  return { headers, isReady, error };
+  return { headers, isReady, error: accessTokenError };
 };
 
 export default useHeaders;
