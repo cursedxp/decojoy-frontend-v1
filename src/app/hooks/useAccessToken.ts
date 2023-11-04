@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { set } from "@auth0/nextjs-auth0/dist/session";
+
+interface AccessTokenState {
+  accessToken: string;
+  isLoading: boolean;
+  error: any;
+}
 
 const useAccessToken = () => {
-  const [accessToken, setAccessToken] = useState<string>("");
+  const [state, setState] = useState<AccessTokenState>({
+    accessToken: "",
+    isLoading: true,
+    error: null,
+  });
   const [error, setError] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -12,18 +24,31 @@ const useAccessToken = () => {
         const tokenResponse = await axios.get("/api/getAccessToken");
         const accessToken = tokenResponse.data.accessToken;
         if (isMounted) {
-          setAccessToken(accessToken);
+          setState({
+            accessToken: tokenResponse.data.accessToken,
+            isLoading: false,
+            error: null,
+          });
         }
       } catch (error) {
+        if (isMounted) {
+          setState({
+            accessToken: "",
+            isLoading: false,
+            error: error,
+          });
+        }
         setError(error);
       }
     };
     getAccessToken();
+
+    // Cleanup function to prevent setting state after unmounting
     return () => {
       isMounted = false;
     };
   }, []);
-  return { accessToken, error };
+  return state;
 };
 
 export default useAccessToken;
