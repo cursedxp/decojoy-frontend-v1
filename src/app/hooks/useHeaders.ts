@@ -1,41 +1,50 @@
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import useAccessToken from "./useAccessToken";
+import { set } from "@auth0/nextjs-auth0/dist/session";
 
-interface Headers {
+interface HeadersState {
   headers: {
-    Authorization: string;
+    Authorization?: string;
     "Content-Type": string;
   };
+  isReady: boolean;
+  error: string | null;
 }
 
 const useHeaders = (contentType: string) => {
-  const [headers, setHeaders] = useState<Headers | undefined>(undefined);
-  // const [error, setError] = useState<any>(null);
-  const [isReady, setIsReady] = useState<boolean>(false);
-  const { accessToken, isLoading, error: accessTokenError } = useAccessToken();
+  const [state, setState] = useState<HeadersState>({
+    headers: {
+      "Content-Type": contentType,
+    },
+    isReady: false,
+    error: null,
+  });
+
+  const { accessToken, isReady, error: accessTokenError } = useAccessToken();
 
   const prepareHeaders = useCallback(() => {
-    if (!isLoading) {
-      if (accessToken) {
-        setHeaders({
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": contentType,
-          },
-        });
-        setIsReady(true);
-      } else if (accessTokenError) {
-        console.error("accessTokenError", accessTokenError);
-        setIsReady(false);
-      }
-    }
-  }, [accessToken, contentType, accessTokenError, isLoading]);
+    setState((prevState) => ({
+      ...prevState,
+      headers: {
+        ...prevState.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      isReady: true,
+    }));
+  }, [accessToken]);
 
   useEffect(() => {
-    prepareHeaders();
-  }, [prepareHeaders]);
+    if (accessToken && isReady) {
+      prepareHeaders();
+    } else if (accessTokenError) {
+      setState((prevState) => ({
+        ...prevState,
+        error: "Access token is missing or incorrect.",
+      }));
+    }
+  }, [prepareHeaders, accessTokenError, accessToken, isReady]);
 
-  return { headers, isReady, error: accessTokenError };
+  return state;
 };
 
 export default useHeaders;
