@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import Modal from "@/app/components/Modal";
 import { ToastContainer } from "react-toastify";
@@ -7,7 +7,6 @@ import ProductForm from "@/app/components/ProductForm";
 import useGetRequest from "@/app/hooks/useGetRequest";
 import useDeleteRequest from "@/app/hooks/useDeleteRequest";
 import useToastNotification from "@/app/hooks/useToastNotifications";
-import { get } from "http";
 
 const columns = [
   "Image",
@@ -34,64 +33,54 @@ const ProductsPage: React.FC = () => {
     isLoading: deleteIsLoading,
     sendDeleteRequest,
   } = useDeleteRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
-  const [showModal, setShowModal] = React.useState(false);
-  const {
-    response: getResponse,
-    error: getError,
-    isLoading: getIsLoading,
-    sendGetRequest,
-  } = useGetRequest(process.env.NEXT_PUBLIC_API_URL + "/products");
+
+  const [showModal, setShowModal] = useState(false);
+
+  const { state, sendGetRequest } = useGetRequest(
+    process.env.NEXT_PUBLIC_API_URL + "/products"
+  );
 
   const { notifySuccess, notifyError } = useToastNotification();
 
   const [data, setData] = React.useState<Product[]>([]);
 
-  const onClose = useCallback(async () => {
+  const onClose = useCallback(() => {
     setShowModal(false);
-    try {
-      await sendGetRequest();
-      notifySuccess("Product successfully created!");
-      setData(getResponse || []);
-    } catch (err) {
-      notifyError("Error fetching products.");
-    }
-  }, [sendGetRequest, notifyError, notifySuccess, getResponse]);
+    sendGetRequest();
+  }, [sendGetRequest, setShowModal]);
 
   const removeProduct = useCallback(
-    async (id: number) => {
-      try {
-        await sendDeleteRequest(id);
-        notifySuccess("Product successfully deleted!");
-        await sendGetRequest();
-        setData(getResponse || []);
-      } catch (err) {
-        notifyError("Error deleting product.");
-      }
+    (id: number) => {
+      sendDeleteRequest(id)
+        .then(() => {
+          notifySuccess("Product successfully deleted!");
+          sendGetRequest();
+        })
+        .catch((error) => {
+          notifyError("Error deleting product");
+        });
     },
     [sendDeleteRequest, sendGetRequest, notifySuccess, notifyError]
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      await sendGetRequest();
-    };
-    fetchData();
+    sendGetRequest();
   }, [sendGetRequest]);
 
   useEffect(() => {
-    if (getResponse !== null) {
-      setData(getResponse);
+    if (state.response) {
+      setData(state.response || []);
     }
-  }, [getResponse]);
+  }, [state.response]);
 
   useEffect(() => {
     if (deleteError) {
-      notifyError(deleteError.message || "Error deleting product.");
+      notifyError("Error deleting product.");
     }
-    if (getError) {
-      notifyError(getError.message || "Error fetching products.");
+    if (state.error) {
+      notifyError("Error fetching products.");
     }
-  }, [deleteError, getError, notifyError]);
+  }, [deleteError, state.error, notifyError]);
 
   return (
     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 p-16 flex-col h-screen">
