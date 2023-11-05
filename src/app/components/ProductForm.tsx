@@ -16,7 +16,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const { accessToken, error } = useAccessToken();
 
-  const { response, requestError, isLoading, sendPostRequest } = usePostRequests(
+  const { state, sendPostRequest } = usePostRequests(
     {},
     process.env.NEXT_PUBLIC_API_URL + "/products"
   );
@@ -94,7 +94,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
           <label htmlFor="title" className="text-xs font-medium">
             Title
           </label>
-          <p className=" text-xs text-gray-500">Enter your product title here</p>
+          <p className=" text-xs text-gray-500">
+            Enter your product title here
+          </p>
         </div>
         <input
           type="text"
@@ -141,7 +143,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
           <label htmlFor="description" className="text-xs font-medium">
             Description
           </label>
-          <p className=" text-xs text-gray-500">Enter your product description here</p>
+          <p className=" text-xs text-gray-500">
+            Enter your product description here
+          </p>
         </div>
         <textarea
           id="description"
@@ -160,7 +164,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
           <label htmlFor="category" className="text-xs font-medium">
             Category
           </label>
-          <p className=" text-xs text-gray-500">Enter your product category here</p>
+          <p className=" text-xs text-gray-500">
+            Enter your product category here
+          </p>
         </div>
         <input
           type="text"
@@ -181,7 +187,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ onClose }) => {
           <label htmlFor="price" className="text-xs font-medium">
             Price
           </label>
-          <p className=" text-xs text-gray-500">Enter your product price here</p>
+          <p className=" text-xs text-gray-500">
+            Enter your product price here
+          </p>
         </div>
         <input
           type="number"
