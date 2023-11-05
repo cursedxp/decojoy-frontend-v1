@@ -23,7 +23,7 @@ const useDeleteRequest = (apiUrl: string) => {
     setIsLoading(true);
     try {
       const response = await axios.delete(`${apiUrl}/${id}`, {
-        headers: headers.headers,
+        headers: headers,
       });
       setResponse(response.data);
     } catch (apiError) {
