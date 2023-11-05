@@ -1,47 +1,56 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import useHeaders from "./useHeaders";
 import axios from "axios";
+import { set } from "@auth0/nextjs-auth0/dist/session";
+
+interface GetRequestState {
+  response: any;
+  error: any;
+  isReady: boolean;
+}
 
 const useGetRequest = (apiUrl: string) => {
-  const [response, setResponse] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [state, setState] = useState<GetRequestState>({
+    response: null,
+    error: null,
+    isReady: false,
+  });
+
   const {
     headers,
-    isReady,
+    isReady: isHeadersReady,
     error: headersError,
   } = useHeaders("application/json");
 
+  const requestQueued = useRef(false);
+
   const sendGetRequest = useCallback(async () => {
-    if (!apiUrl) {
-      setError({ message: "API URL is missing.", details: null });
-      return;
-    }
-    if (!isReady) {
+    // If headers are not ready, queue the request and wait.
+    if (!isHeadersReady) {
+      requestQueued.current = true;
+      setState((prevState) => ({ ...prevState, isReady: false }));
       return;
     }
 
-    setIsLoading(true);
+    // If headers are ready and the request is queued, proceed with the request.
+    setState((prevState) => ({ ...prevState, isReady: true }));
+
     try {
-      const res = await axios.get(apiUrl, { headers: headers?.headers });
-      setResponse(res.data);
-    } catch (apiError) {
-      setError({ message: "API call failed.", details: apiError });
-    } finally {
-      setIsLoading(false);
+      const res = await axios.get(apiUrl, { headers: headers });
+      setState((prevState) => ({ ...prevState, response: res.data }));
+    } catch (error) {
+      setState((prevState) => ({ ...prevState, error: error }));
     }
-  }, [apiUrl, headers, isReady]);
+  }, [apiUrl, headers, isHeadersReady]);
 
+  // Watch for headers to become ready if there's a queued request.
   useEffect(() => {
-    if (!isReady && headersError) {
-      setError({
-        message: "Headers are not ready.",
-        details: headersError,
-      });
-      setIsLoading(false);
+    if (isHeadersReady && requestQueued.current) {
+      sendGetRequest();
+      requestQueued.current = false;
     }
-  }, [isReady, headersError]);
+  }, [sendGetRequest, isHeadersReady]);
 
-  return { response, error, isLoading, sendGetRequest };
+  return { state, sendGetRequest };
 };
 export default useGetRequest;
